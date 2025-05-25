@@ -1,4 +1,4 @@
-package pl.edu.streamfinder.service;
+package pl.edu.streamfinder.streamingService;
 
 import java.util.Date;
 

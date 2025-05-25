@@ -1,10 +1,10 @@
 package pl.edu.streamfinder.streamignOption;
 
-import pl.edu.streamfinder.service.Service;
+import pl.edu.streamfinder.streamingService.StreamingService;
 
 public class Option {
     private String link;
     private String type;
     private String videoLink;
-    private Service service;
+    private StreamingService streamingService;
 }
