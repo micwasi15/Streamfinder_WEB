@@ -10,7 +10,6 @@ import java.util.List;
 @Data
 @TypeAlias("series")
 public class Series extends Show {
-    private String seasonTitle;
     private int firstAirYear;
     private int lastAirYear;
     private List<Season> seasons;

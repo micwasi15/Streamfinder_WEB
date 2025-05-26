@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
@@ -14,9 +15,10 @@ import java.util.List;
     property = "showType"
 )
 @JsonSubTypes({
-    @JsonSubTypes.Type(value = Film.class, name = "movie"),
+    @JsonSubTypes.Type(value = Film.class, name = "film"),
     @JsonSubTypes.Type(value = Series.class, name = "series")
 })
+@TypeAlias("show")
 @Data
 @Document(collection = "shows")
 public class Show {
@@ -30,7 +32,7 @@ public class Show {
     private List<String> cast;
     private List<String> directors;
     private List<String> genres;
-    private String overwiew;
+    private String overview;
     private String showType;
     private String trailerURL;
     private ImageSet imageSet;
