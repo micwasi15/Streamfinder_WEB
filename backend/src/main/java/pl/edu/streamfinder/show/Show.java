@@ -34,4 +34,6 @@ public class Show {
     private String showType;
     private String trailerURL;
     private ImageSet imageSet;
+    private List<String> countryNames;
+    private List<String> streamingPlatforms;
 }

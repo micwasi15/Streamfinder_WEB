@@ -1,5 +1,6 @@
 package pl.edu.streamfinder.show;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,8 +16,8 @@ public class ShowController {
     }
 
     @GetMapping("/shows")
-    public ResponseEntity<List<Show>> getAllShows() {
-        return ResponseEntity.ok(showService.findAll());
+    public ResponseEntity<Page<Show>> getAllShows(ShowSearchCriteria criteria) {
+        return ResponseEntity.ok(showService.searchShows(criteria));
     }
 
     @GetMapping("/debug")
