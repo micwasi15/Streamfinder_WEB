@@ -2,9 +2,7 @@ package pl.edu.streamfinder.show;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -42,5 +40,11 @@ public class ShowController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(series);
+    }
+
+    @GetMapping("/shows/platform-stats")
+    public ResponseEntity<List<PlatformStats>> getPlatformStats(@RequestParam(required = false) String genre, @RequestParam List<String> platforms) {
+        List<PlatformStats> stats = showService.getPlatformStats(genre, platforms);
+        return ResponseEntity.ok(stats);
     }
 }

@@ -5,11 +5,12 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-import pl.edu.streamfinder.streamignOption.StreamingOptions;
 import pl.edu.streamfinder.streamignOption.StreamingOptionsService;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 @Service
@@ -28,6 +29,10 @@ public class ShowService {
         return showRepository.findAll().stream()
                 .map(Object::getClass)
                 .toList();
+    }
+
+    public List<Show> getAllShows() {
+        return showRepository.findAll();
     }
 
     public Page<Show> searchShows(ShowSearchCriteria criteria) {
@@ -105,5 +110,55 @@ public class ShowService {
             }
         }
         return series;
+    }
+
+    public List<String> getAllStreamingPlatforms() {
+        List<Show> shows = showRepository.findAll();
+        Set<String> platforms = new HashSet<>();
+        for (Show show : shows) {
+            if (show.getStreamingPlatforms() != null) {
+                platforms.addAll(show.getStreamingPlatforms());
+            }
+        }
+        return new ArrayList<>(platforms);
+    }
+
+    public List<String> getAllGenres() {
+        List<Show> shows = showRepository.findAll();
+        Set<String> genres = new HashSet<>();
+        for (Show show : shows) {
+            if (show.getGenres() != null) {
+                genres.addAll(show.getGenres());
+            }
+        }
+        return new ArrayList<>(genres);
+    }
+
+    public List<PlatformStats> getPlatformStats(String genre, List<String> platforms) {
+        List<PlatformStats> stats = new ArrayList<>();
+        for (String platform : platforms) {
+            PlatformStats platformStat = new PlatformStats();
+            platformStat.setPlatformName(platform);
+            platformStat.setTotalFilms(0);
+            platformStat.setTotalSeries(0);
+
+            Query query = new Query();
+            query.addCriteria(Criteria.where("streamingPlatforms").is(platform));
+
+            if (genre != null && !genre.isBlank()) {
+                query.addCriteria(Criteria.where("genres").in(genre));
+            }
+
+            List<Show> shows = mongoTemplate.find(query, Show.class);
+            for (Show show : shows) {
+                if (show instanceof Film) {
+                    platformStat.setTotalFilms(platformStat.getTotalFilms() + 1);
+                } else if (show instanceof Series) {
+                    platformStat.setTotalSeries(platformStat.getTotalSeries() + 1);
+                }
+            }
+            stats.add(platformStat);
+        }
+        return stats;
     }
 }
