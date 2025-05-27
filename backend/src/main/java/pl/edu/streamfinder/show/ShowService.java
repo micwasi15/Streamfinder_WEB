@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import pl.edu.streamfinder.streamignOption.StreamingOptions;
+import pl.edu.streamfinder.streamignOption.StreamingOptionsService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +16,12 @@ import java.util.regex.Pattern;
 public class ShowService {
     private final ShowRepository showRepository;
     private final MongoTemplate mongoTemplate;
+    private final StreamingOptionsService streamingOptionsService;
 
-    public ShowService(ShowRepository showRepository, MongoTemplate mongoTemplate) {
+    public ShowService(ShowRepository showRepository, MongoTemplate mongoTemplate, StreamingOptionsService streamingOptionsService) {
         this.showRepository = showRepository;
         this.mongoTemplate = mongoTemplate;
+        this.streamingOptionsService = streamingOptionsService;
     }
 
     public List<?> debugTypes() {
@@ -83,7 +86,7 @@ public class ShowService {
                 .filter(show -> show instanceof Film).orElse(null);
         if (film != null && film.getStreamingOptionsId() != null) {
             film.setStreamingOptions(
-                    mongoTemplate.findById(film.getStreamingOptionsId(), StreamingOptions.class));
+                    streamingOptionsService.getStreamingOptions(film.getStreamingOptionsId()));
         }
         return film;
     }
@@ -96,7 +99,7 @@ public class ShowService {
                 for (Episode episode : season.getEpisodes()) {
                     if (episode.getStreamingOptionsId() != null) {
                         episode.setStreamingOptions(
-                                mongoTemplate.findById(episode.getStreamingOptionsId(), StreamingOptions.class));
+                                streamingOptionsService.getStreamingOptions(episode.getStreamingOptionsId()));
                     }
                 }
             }
