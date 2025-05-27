@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import pl.edu.streamfinder.streamignOption.StreamingOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,15 @@ public class ShowService {
     }
 
     public Page<Show> searchShows(ShowSearchCriteria criteria) {
+        return searchShows(criteria, null);
+    }
+
+    public Page<Show> searchShows(ShowSearchCriteria criteria, List<String> showIds) {
         List<Criteria> filters = new ArrayList<>();
+
+        if (showIds != null && !showIds.isEmpty()) {
+            filters.add(Criteria.where("id").in(showIds));
+        }
 
         if (criteria.getTitle() != null && !criteria.getTitle().isBlank()) {
             filters.add(Criteria.where("title")
@@ -67,5 +76,31 @@ public class ShowService {
         List<Show> content = mongoTemplate.find(query, Show.class);
 
         return new PageImpl<>(content, pageable, total);
+    }
+
+    public Film getFilmById(String id) {
+        Film film = (Film) showRepository.findById(id)
+                .filter(show -> show instanceof Film).orElse(null);
+        if (film != null && film.getStreamingOptionsId() != null) {
+            film.setStreamingOptions(
+                    mongoTemplate.findById(film.getStreamingOptionsId(), StreamingOptions.class));
+        }
+        return film;
+    }
+
+    public Series getSeriesById(String id) {
+        Series series = (Series) showRepository.findById(id)
+                .filter(show -> show instanceof Series).orElse(null);
+        if (series != null) {
+            for (Season season : series.getSeasons()) {
+                for (Episode episode : season.getEpisodes()) {
+                    if (episode.getStreamingOptionsId() != null) {
+                        episode.setStreamingOptions(
+                                mongoTemplate.findById(episode.getStreamingOptionsId(), StreamingOptions.class));
+                    }
+                }
+            }
+        }
+        return series;
     }
 }
