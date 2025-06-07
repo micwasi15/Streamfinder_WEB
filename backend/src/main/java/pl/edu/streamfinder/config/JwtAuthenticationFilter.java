@@ -1,4 +1,4 @@
-package pl.edu.streamfinder;
+package pl.edu.streamfinder.config;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

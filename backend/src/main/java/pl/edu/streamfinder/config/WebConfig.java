@@ -1,4 +1,4 @@
-package pl.edu.streamfinder;
+package pl.edu.streamfinder.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

@@ -1,14 +1,12 @@
-package pl.edu.streamfinder;
+package pl.edu.streamfinder.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -16,23 +14,22 @@ import java.time.Duration;
 @Component
 public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
-    private final JwtUtils jwtUtils;
+    private final JwtService jwtService;
     private final String redirectUri;
 
-    public CustomOAuth2SuccessHandler(JwtUtils jwtUtils, @Value("${frontend.redirect-uri}") String redirectUri) {
-        this.jwtUtils = jwtUtils;
+    public CustomOAuth2SuccessHandler(JwtService jwtService, @Value("${frontend.redirect-uri}") String redirectUri) {
+        this.jwtService = jwtService;
         this.redirectUri = redirectUri;
     }
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
-        OAuth2User user = (OAuth2User) authentication.getPrincipal();
-        String token = jwtUtils.generateToken(user);
+        String token = jwtService.generateToken(authentication);
 
         ResponseCookie cookie = ResponseCookie.from("jwt", token)
                 .httpOnly(true)
-                .secure(false) // ustaw na true w HTTPS
+                .secure(false)
                 .path("/")
                 .maxAge(Duration.ofDays(1))
                 .sameSite("Lax")
