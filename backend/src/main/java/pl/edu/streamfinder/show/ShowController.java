@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class ShowController {
@@ -14,9 +15,18 @@ public class ShowController {
         this.showService = showService;
     }
 
-    @GetMapping("/shows")
+    @GetMapping("/shows/search")
     public ResponseEntity<Page<Show>> getAllShows(ShowSearchCriteria criteria) {
         return ResponseEntity.ok(showService.searchShows(criteria));
+    }
+
+    @GetMapping("/shows/type/{id}")
+    public ResponseEntity<Map<String, String>> getShowType(@PathVariable String id) {
+        String type = showService.getShowType(id);
+        if (type == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(Map.of("showType", type));
     }
 
     @GetMapping("/debug")

@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 @Service
 public class ShowService {
@@ -47,8 +46,7 @@ public class ShowService {
         }
 
         if (criteria.getTitle() != null && !criteria.getTitle().isBlank()) {
-            filters.add(Criteria.where("title")
-                    .regex(".*" + Pattern.quote(criteria.getTitle()) + ".*", "i"));
+            filters.add(Criteria.where("title").regex(".*" + criteria.getTitle().replaceAll("(?<=.)(?=.)", ".*") + ".*", "i"));
         }
 
         if (criteria.getGenres() != null && !criteria.getGenres().isEmpty()) {
@@ -110,6 +108,14 @@ public class ShowService {
             }
         }
         return series;
+    }
+
+    public String getShowType(String id) {
+        Show show = showRepository.findById(id).orElse(null);
+        if (show == null) {
+            return null;
+        }
+        return show.getShowType();
     }
 
     public List<String> getAllStreamingPlatforms() {

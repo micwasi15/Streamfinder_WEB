@@ -28,7 +28,7 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .cors(Customizer.withDefaults())
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/api/public/**", "/login/**", "/oauth2/**", "/shows/**").permitAll()
+                    .requestMatchers("/api/public/**", "/login/**", "/oauth2/**", "/shows/**", "/streaming-options/**", "/countries").permitAll()
                     .anyRequest().authenticated())
             .oauth2Login(oauth2 -> oauth2.successHandler(successHandler))
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
