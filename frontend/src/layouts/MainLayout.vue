@@ -1,11 +1,22 @@
 <template>
-  <div>
+  <div class="bg-secondary">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
       <div class="container-fluid">
-        <!-- Lewa strona -->
         <router-link class="navbar-brand fw-bold" to="/">StreamFinder</router-link>
 
-        <div class="collapse navbar-collapse">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto">
             <li class="nav-item">
               <router-link class="nav-link" to="/search">Wyszukaj</router-link>
@@ -32,39 +43,46 @@
             </li>
           </ul>
 
-          <!-- Prawa strona -->
           <div class="d-flex align-items-center">
-            <span v-if="user" class="text-white me-3">{{ user.name }}</span>
+            <span v-if="user" class="text-white me-3">{{ user.email }}</span>
+            <router-link
+              v-if="!user"
+              class="btn btn-outline-light me-2"
+              to="/login"
+            >Zaloguj</router-link>
             <button
+              v-if="user"
               class="btn btn-outline-light"
-              @click="handleAuth"
-            >
-              {{ user ? 'Wyloguj' : 'Zaloguj' }}
-            </button>
+              @click="() => userStore.logout()"
+            >Wyloguj</button>
           </div>
         </div>
       </div>
     </nav>
 
-    <main class="container py-4">
+    <main class="container py-4 min-vh-100">
       <router-view />
     </main>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { useUserStore } from '@/composables/useUserStore'
+import { onMounted } from 'vue'
 
-// Prosty mock użytkownika — zamień na realne auth
-const user = ref({ name: 'Jan Kowalski' }) // lub null
+const user = ref(null)
+const userStore = useUserStore()
 
-function handleAuth() {
-  if (user.value) {
-    user.value = null
-  } else {
-    user.value = { name: 'Jan Kowalski' }
-  }
-}
+onMounted(() => {
+  useUserStore().fetchUser()
+  user.value = userStore.user
+})
+
+watch(() => userStore.user, (newUser) => {
+  user.value = newUser
+})
+
 </script>
 
 <style scoped>

@@ -16,10 +16,12 @@
       Don't have an account?
       <button class="btn btn-primary" @click="goToRegister">Register</button>
     </p>
+    <button class="btn btn-secondary" @click="googleLogin">Login with Google</button>
   </div>
 </template>
 
 <script setup>
+import api from '@/axios'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -33,5 +35,9 @@ const goToHome = () => {
 
 const goToRegister = () => {
   router.push('/login/register')
+}
+
+const googleLogin = () => {
+  window.location.href = api.defaults.baseURL + '/auth/google'
 }
 </script>

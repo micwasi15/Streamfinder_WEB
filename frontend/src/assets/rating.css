@@ -1,0 +1,27 @@
+.rating-box {
+  min-width: 38px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-align: center;
+  color: #fff;
+  font-size: 1rem;
+  margin-left: 12px;
+}
+
+.rating-red {
+  background: #e74c3c;
+}
+.rating-orange {
+  background: #e67e22;
+}
+.rating-yellow {
+  background: #f1c40f;
+  color: #222;
+}
+.rating-green {
+  background: #27ae60;
+}
+.rating-darkgreen {
+  background: #145a32;
+}
