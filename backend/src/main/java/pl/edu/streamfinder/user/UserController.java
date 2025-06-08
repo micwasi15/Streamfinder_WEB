@@ -18,4 +18,10 @@ public class UserController {
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.findAll());
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserResponseDTO> getCurrentUser(java.security.Principal principal) {
+        User user = userService.findByEmail(principal.getName());
+        return ResponseEntity.ok(new UserResponseDTO(user));
+    }
 }

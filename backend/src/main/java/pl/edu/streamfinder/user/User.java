@@ -14,8 +14,6 @@ import java.util.List;
 public class User {
     @Id
     private String id;
-    private String username;
-    @Getter
     private String passwordHash;
     private String email;
     private List<Show> favoriteShows;

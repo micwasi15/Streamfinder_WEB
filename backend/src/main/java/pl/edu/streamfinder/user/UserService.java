@@ -15,4 +15,16 @@ public class UserService {
     public List<User> findAll() {
         return userRepository.findAll();
     }
+
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    public boolean createUser(User user) {
+        if (userRepository.existsByEmail(user.getEmail())) {
+            return false;
+        }
+        userRepository.save(user);
+        return true;
+    }
 }
