@@ -16,5 +16,6 @@ public class User {
     private String id;
     private String passwordHash;
     private String email;
+    private List<String> roles = new ArrayList<>();
     private List<String> favoriteShowIds = new ArrayList<>();
 }

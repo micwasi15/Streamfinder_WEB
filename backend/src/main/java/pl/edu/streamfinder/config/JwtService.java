@@ -28,8 +28,7 @@ public class JwtService {
         this.userService = userService;
     }
 
-    public String generateToken(Authentication authentication) {
-        String email = ((OAuth2User) authentication.getPrincipal()).getAttribute("email");
+    public String generateToken(String email) {
         if (email == null) {
             throw new IllegalArgumentException("Email attribute is missing in the authentication principal");
         }

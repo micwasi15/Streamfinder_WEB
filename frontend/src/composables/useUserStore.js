@@ -19,12 +19,16 @@ export const useUserStore = defineStore('user', {
       }
     },
     async login(credentials) {
-      await api.post('login', credentials, { withCredentials: true })
+      await api.post('/auth/login', credentials, { withCredentials: true })
       await this.fetchUser()
+      return this.user
     },
     async logout() {
-      await api.post('logout', {}, { withCredentials: true })
-      this.user = null
+      const res = await api.post('/auth/logout', {}, { withCredentials: true })
+      if (res.status === 200) {
+        this.user = null
+        window.location.href = '/'
+      }
     }
   },
   persist: true,

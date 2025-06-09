@@ -1,17 +1,28 @@
 package pl.edu.streamfinder.user;
 
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+import pl.edu.streamfinder.config.JwtService;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class UserController {
     private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     @GetMapping("/users")
@@ -23,5 +34,63 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> getCurrentUser(java.security.Principal principal) {
         User user = userService.findByEmail(principal.getName());
         return ResponseEntity.ok(new UserResponseDTO(user));
+    }
+
+    @PostMapping("/auth/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response,
+                                    @CookieValue(name = "jwt", required = false) String jwtCookie) {
+        ResponseCookie cookie = ResponseCookie.from("jwt", "")
+                .path("/")
+                .maxAge(0)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        return ResponseEntity.ok(null);
+    }
+
+    @PostMapping("/auth/register")
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
+        if (userService.findByEmail(request.getEmail()) != null) {
+            return ResponseEntity
+                    .badRequest()
+                    .body("Email is already in use.");
+        }
+
+        User user = new User();
+        user.setEmail(request.getEmail());
+        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        user.setRoles(List.of("USER"));
+
+        userService.createUser(user);
+        return ResponseEntity.ok("User registered successfully");
+    }
+
+    @PostMapping("/auth/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletResponse response) {
+        User user = userService.findByEmail(request.getEmail());
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        }
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        }
+
+        String jwt = jwtService.generateToken(request.getEmail());
+
+        ResponseCookie cookie = ResponseCookie.from("jwt", jwt)
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(7 * 24 * 60 * 60)
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        return ResponseEntity.ok("Logged in successfully");
     }
 }
