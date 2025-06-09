@@ -18,7 +18,7 @@
     </div>
 
     <!-- Tytuł, lata, serce, ocena -->
-    <div v-if="!isLoading && show" class="d-flex align-items-center justify-content-between mb-3 flex-wrap">
+    <div v-if="!isLoading && show" class="d-flex align-items-center justify-content-between mb-3 flex-wrap text-white">
       <div>
         <h2 class="mb-1">{{ show.title }}</h2>
         <div class="years" v-if="years">{{ years }}</div>
@@ -33,7 +33,7 @@
       </div>
     </div>
 
-    <p v-if="!isLoading && show.overview" class="mb-3">{{ show.overview }}</p>
+    <p v-if="!isLoading && show.overview" class="mb-3 text-white">{{ show.overview }}</p>
 
     <!-- Szczegóły -->
     <p class="text-center" v-if="message">{{ message }}</p>
@@ -128,6 +128,8 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+
+
 .details-container {
   max-width: 700px;
   margin: 0 auto;
@@ -157,7 +159,6 @@ onMounted(async () => {
 
 .years {
   font-size: 1.1em;
-  color: #bbb;
   margin-bottom: 2px;
 }
 

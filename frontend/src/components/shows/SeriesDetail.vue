@@ -3,7 +3,7 @@
     <h3 class="text-white mb-3">Sezony</h3>
     <select v-model="selectedSeason" class="form-select w-auto mb-4">
       <option v-for="season in seasons" :key="season.title" :value="season.title">
-        Sezon {{ season.title }} ({{ season.episodes.length }} odc.)
+        {{ season.title }}
       </option>
     </select>
 
@@ -57,7 +57,6 @@ const currentSeason = computed(() =>
 
 const expandedEpisodes = ref({})
 
-// Resetuj rozwinięte odcinki przy zmianie sezonu
 watch(selectedSeason, () => {
   expandedEpisodes.value = {}
 })

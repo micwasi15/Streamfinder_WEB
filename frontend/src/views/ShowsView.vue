@@ -32,7 +32,7 @@
         </button>
         <input
           type="number"
-          class="form-control d-inline-block w-auto align-self-center"
+          class="form-control d-inline-block w-auto align-self-center no-spin"
           style="width: 70px; min-width: 70px; max-width: 70px;"
           v-model.number="pageInput"
           @input="goToPage"
@@ -164,12 +164,23 @@ div {
 }
 
 /* Ukryj strzałki w input[type=number] */
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button {
+.no-spin::-webkit-inner-spin-button,
+.no-spin::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-input[type=number] {
+.no-spin {
   -moz-appearance: textfield;
+}
+
+.btn:focus, .btn:active, .btn:focus-visible {
+  box-shadow: none !important;
+  outline: none !important;
+  background-color: inherit !important;
+  color: inherit !important;
+  border-color: inherit !important;
+}
+.btn:active {
+  filter: none !important;
 }
 </style>
