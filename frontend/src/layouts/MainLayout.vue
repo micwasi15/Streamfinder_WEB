@@ -26,7 +26,7 @@
             </li>
 
             <!-- Dropdown: Statystyki -->
-            <li class="nav-item dropdown">
+            <li class="nav-item dropdown custom-dropdown">
               <a
                 class="nav-link dropdown-toggle"
                 href="#"
@@ -37,7 +37,7 @@
                 Statystyki
               </a>
               <ul class="dropdown-menu">
-                <li><router-link class="dropdown-item" to="/stats/top">Top 10</router-link></li>
+                <li><router-link class="dropdown-item" to="/platform/stats">Top 10</router-link></li>
                 <li><router-link class="dropdown-item" to="/stats/user">Twoje statystyki</router-link></li>
               </ul>
             </li>
@@ -88,5 +88,35 @@ watch(() => userStore.user, (newUser) => {
 <style scoped>
 main {
   background: #000000;
+}
+
+.custom-dropdown {
+  position: relative;
+}
+
+.custom-dropdown .dropdown-menu {
+  display: none;
+  position: absolute;
+  top: -45px;
+  left: 0;
+  top: 100%;
+  min-width: 180px;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.3s cubic-bezier(.4,2,.6,1), opacity 0.2s;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  margin-top: 0.5rem;
+  pointer-events: none;
+  border-radius: 0.5rem;
+  z-index: 1000;
+}
+
+.custom-dropdown:hover .dropdown-menu,
+.custom-dropdown:focus-within .dropdown-menu {
+  display: block;
+  max-height: 500px;
+  opacity: 1;
+  pointer-events: auto;
 }
 </style>

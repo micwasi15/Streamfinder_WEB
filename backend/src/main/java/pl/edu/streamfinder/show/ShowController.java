@@ -92,6 +92,18 @@ public class ShowController {
         return ResponseEntity.ok(series);
     }
 
+    @GetMapping("/shows/platforms")
+    public ResponseEntity<List<String>> getAllStreamingPlatforms() {
+        List<String> platforms = showService.getAllStreamingPlatforms();
+        return ResponseEntity.ok(platforms);
+    }
+
+    @GetMapping("/shows/genres")
+    public ResponseEntity<List<String>> getAllGenres() {
+        List<String> genres = showService.getAllGenres();
+        return ResponseEntity.ok(genres);
+    }
+
     @GetMapping("/shows/platform-stats")
     public ResponseEntity<List<PlatformStats>> getPlatformStats(@RequestParam(required = false) String genre, @RequestParam List<String> platforms) {
         List<PlatformStats> stats = showService.getPlatformStats(genre, platforms);

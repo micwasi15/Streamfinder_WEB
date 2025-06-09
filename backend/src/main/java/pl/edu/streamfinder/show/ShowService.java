@@ -151,7 +151,17 @@ public class ShowService {
                 platforms.addAll(show.getStreamingPlatforms());
             }
         }
-        return new ArrayList<>(platforms);
+        List<String> res = new ArrayList<>(platforms);
+        List<PlatformStats> platformStats = getPlatformStats(null, res);
+        res.sort((p1, p2) -> {
+            int count1 = platformStats.stream().filter(ps -> ps.getPlatformName().equals(p1)).mapToInt(PlatformStats::getTotalFilms).sum() +
+                         platformStats.stream().filter(ps -> ps.getPlatformName().equals(p1)).mapToInt(PlatformStats::getTotalSeries).sum();
+            int count2 = platformStats.stream().filter(ps -> ps.getPlatformName().equals(p2)).mapToInt(PlatformStats::getTotalFilms).sum() +
+                         platformStats.stream().filter(ps -> ps.getPlatformName().equals(p2)).mapToInt(PlatformStats::getTotalSeries).sum();
+            return Integer.compare(count2, count1);
+        });
+
+        return res;
     }
 
     public List<String> getAllGenres() {
