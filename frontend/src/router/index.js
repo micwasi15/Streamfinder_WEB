@@ -8,6 +8,7 @@ import RegisterView from '@/views/RegisterView.vue'
 import ShowsView from '@/views/ShowsView.vue'
 import ShowDetails from '@/components/shows/ShowDetails.vue'
 import PlatformStats from '@/views/PlatformStats.vue'
+import PlatformPricesStats from '@/views/PlatformPricesStats.vue'
 
 const routes = [
   {
@@ -20,6 +21,7 @@ const routes = [
       { path: 'favorites', name: 'Favorites', component: ShowsView, props: {favoritesMode: true} },
       { path: 'shows/:id', name: 'ShowDetails', component: ShowDetails, props: true },
       { path: 'platform/stats', name: 'PlatformStats', component: PlatformStats },
+      { path: 'platform/prices', name: 'PlatformPrices', component: PlatformPricesStats },
     ],
   },
   {

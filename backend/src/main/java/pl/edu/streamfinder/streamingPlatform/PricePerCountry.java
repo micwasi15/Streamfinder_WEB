@@ -1,14 +1,11 @@
-package pl.edu.streamfinder.streamingService;
+package pl.edu.streamfinder.streamingPlatform;
 
 import lombok.Data;
 
-import java.util.Date;
-
 @Data
-public class PricesPerCountry {
+public class PricePerCountry {
     private String countryCode;
     private String countryName;
     private double price;
     private String currency;
-    private String ISODate;
 }

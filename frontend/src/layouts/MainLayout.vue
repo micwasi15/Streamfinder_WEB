@@ -37,8 +37,8 @@
                 Statystyki
               </a>
               <ul class="dropdown-menu">
-                <li><router-link class="dropdown-item" to="/platform/stats">Top 10</router-link></li>
-                <li><router-link class="dropdown-item" to="/stats/user">Twoje statystyki</router-link></li>
+                <li><router-link class="dropdown-item" to="/platform/stats">Show na platformach</router-link></li>
+                <li><router-link class="dropdown-item" to="/platform/prices">Ceny platform</router-link></li>
               </ul>
             </li>
           </ul>

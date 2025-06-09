@@ -1,19 +1,17 @@
 package pl.edu.streamfinder.streamignOption;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import pl.edu.streamfinder.streamingService.StreamingService;
-import pl.edu.streamfinder.streamingService.StreamingServiceRepository;
+import pl.edu.streamfinder.streamingPlatform.StreamingPlatform;
+import pl.edu.streamfinder.streamingPlatform.StreamingPlatformRepository;
 
 @Service
 public class StreamingOptionsService {
     private final StreamingOptionsRepository streamingOptionsRepository;
-    private final StreamingServiceRepository streamingServiceRepository;
+    private final StreamingPlatformRepository streamingPlatformRepository;
 
-    public StreamingOptionsService(StreamingOptionsRepository streamingOptionsRepository, StreamingServiceRepository streamingServiceRepository) {
+    public StreamingOptionsService(StreamingOptionsRepository streamingOptionsRepository, StreamingPlatformRepository streamingPlatformRepository) {
         this.streamingOptionsRepository = streamingOptionsRepository;
-        this.streamingServiceRepository = streamingServiceRepository;
+        this.streamingPlatformRepository = streamingPlatformRepository;
     }
 
     public StreamingOptions getStreamingOptions(String id) {
@@ -22,10 +20,10 @@ public class StreamingOptionsService {
         for (StreamingOptionsByCountry options : streamingOptions.getStreamingOptions()) {
             for (Option option : options.getOptions()) {
                 String platformName = option.getService().getName();
-                StreamingService streamingService = streamingServiceRepository.findByName(platformName);
-                if (streamingService != null) {
-                    option.getService().setId(streamingService.getId());
-                    option.getService().setLogoURL(streamingService.getLogoURL());
+                StreamingPlatform streamingPlatform = streamingPlatformRepository.findByName(platformName);
+                if (streamingPlatform != null) {
+                    option.getService().setId(streamingPlatform.getId());
+                    option.getService().setLogoURL(streamingPlatform.getLogoURL());
                 }
             }
         }
