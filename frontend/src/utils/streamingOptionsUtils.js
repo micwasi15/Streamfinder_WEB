@@ -44,9 +44,10 @@ export async function getStreamingOptionsCountries(streamingOptions) {
     const res = []
     streamingOptions.streamingOptions.forEach(option => {
         if (option?.country) {
+            const existing = allCountries.find(c => c.code === option.country)
             res.push({
                 code: option.country,
-                name: allCountries[option.country]?.name || option.country,
+                name: existing?.name || option.country,
             })
         }
     })
@@ -87,4 +88,14 @@ export function getAvailabilityByCountry(streamingOptions, services) {
     })
 
     return availability
+}
+
+export function getVideoLink(streamingOptions, serviceName, countryCode) {
+    if (!streamingOptions?.streamingOptions) return null
+
+    const option = streamingOptions.streamingOptions.find(opt => opt.country === countryCode)
+    if (!option || !option.options) return null
+
+    const service = option.options.find(s => s.service && s.service.name === serviceName)
+    return service.videoLink ? service.videoLink : service.link || null
 }

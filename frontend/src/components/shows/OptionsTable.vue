@@ -1,29 +1,38 @@
 <template>
-  <table class="table table-bordered text-center align-middle options-table">
-    <thead>
-      <tr>
-        <th></th>
-        <th v-for="service in services" :key="service.name">
-          <img :src="service.logoURL" :alt="service.name" class="service-logo" />
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="country in countries" :key="country.code">
-        <th class="text-start">{{ country.name }}</th>
-        <td v-for="service in services" :key="service.name">
-          <button v-if="isAvailable(country.code, service.name)" class="btn btn-success btn-sm"
-            @click="play(country.code, service.name)">
-            Odtwórz
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table-responsive-custom">
+    <table class="table table-bordered text-center align-middle options-table rounded-table">
+      <thead>
+        <tr>
+          <th class="sticky-col"></th>
+          <th v-for="service in services" :key="service.name">
+            <img :src="service.logoURL" :alt="service.name" class="service-logo" />
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="country in countries" :key="country.code">
+          <th class="text-start sticky-col bg-white">
+            {{ country.name }}
+          </th>
+          <td v-for="service in services" :key="service.name">
+            <div class="d-flex justify-content-center align-items-center h-100">
+              <button
+                v-if="isAvailable(country.code, service.name)"
+                class="btn btn-success btn-sm"
+                @click="play(country.code, service.name)"
+              >
+                Odtwórz
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script setup>
-import { getAvailabilityByCountry, getStreamingOptionsServices, getStreamingOptionsCountries } from '@/utils/streamingOptionsUtils'
+import { getAvailabilityByCountry, getStreamingOptionsServices, getStreamingOptionsCountries, getVideoLink } from '@/utils/streamingOptionsUtils'
 import { ref, watch, onMounted } from 'vue'
 
 const props = defineProps({
@@ -54,13 +63,34 @@ function isAvailable(countryCode, serviceName) {
 }
 
 function play(countryCode, serviceName) {
-  alert(`Odtwarzanie dla ${countryCode} w ${serviceName}`)
+  const url = getVideoLink(props.streamingOptions, serviceName, countryCode)
+  if (url)
+    window.open(url, '_blank')
+  else
+    alert('Brak dostępnego linku do odtworzenia.')
 }
 </script>
 
 <style scoped>
-.options-table {
-  min-width: 400px;
+.table-responsive-custom {
+  overflow-x: auto;
+  border-radius: 1rem;
+  background: white;
+}
+
+.rounded-table {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.sticky-col {
+  position: sticky;
+  left: 0;
+  background: white;
+  z-index: 2;
+  min-width: 120px;
+  max-width: 200px;
+  box-shadow: 2px 0 2px -2px #ccc;
 }
 
 .service-logo {
