@@ -27,4 +27,26 @@ public class UserService {
         userRepository.save(user);
         return true;
     }
+
+    public boolean addShowToFavorites(String showId, String email) {
+        User user = findByEmail(email);
+        if (user == null) {
+            return false;
+        }
+        if (user.getFavoriteShowIds().contains(showId)) {
+            return false;
+        }
+        user.getFavoriteShowIds().add(showId);
+        userRepository.save(user);
+        return true;
+    }
+
+    public boolean removeShowFromFavorites(String showId, String email) {
+        User user = findByEmail(email);
+        if (user == null || !user.getFavoriteShowIds().remove(showId)) {
+            return false;
+        }
+        userRepository.save(user);
+        return true;
+    }
 }

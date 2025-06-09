@@ -1,6 +1,5 @@
 <script setup>
 import { onMounted } from 'vue';
-import TheWelcome from '../components/TheWelcome.vue'
 
 const apiURL = window.__APP_CONFIG__.API_URL;
 onMounted(() => {

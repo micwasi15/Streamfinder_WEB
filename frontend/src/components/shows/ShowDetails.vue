@@ -24,7 +24,7 @@
         <div class="years" v-if="years">{{ years }}</div>
       </div>
       <div class="d-flex align-items-center gap-2">
-        <span class="heart-icon" @click="toggleFavorite" style="cursor:pointer;">
+        <span v-if="isLoggedIn" class="heart-icon" @click="toggleFavorite" style="cursor:pointer;">
           <i :class="['bi', isFavorite ? 'bi-heart-fill' : 'bi-heart']"></i>
         </span>
         <div class="rating-box" :class="ratingColorClass">
@@ -49,6 +49,7 @@ import api from '@/axios';
 import SeriesDetail from './SeriesDetail.vue';
 import { getShowHorizontalPosterUrl, getShowYears } from '@/utils/showUtils';
 import OptionsTable from './OptionsTable.vue';
+import { useUserStore } from '@/composables/useUserStore';
 
 const $route = useRoute();
 
@@ -56,6 +57,9 @@ const show = ref(null);
 const showType = ref(null);
 const isLoading = ref(true);
 const isFavorite = ref(false);
+
+const userStore = useUserStore();
+const isLoggedIn = computed(() => userStore.isAuthenticated);
 
 const message = computed(() => {
   if (isLoading.value) return 'Ładowanie...';
@@ -85,6 +89,19 @@ const trailerEmbedUrl = computed(() => {
 
 function toggleFavorite() {
   isFavorite.value = !isFavorite.value;
+  if (isLoggedIn.value) {
+    if (isFavorite.value) {
+      api.post(`/shows/favorites/${show.value.id}`).catch(err => {
+        console.error('Error adding to favorites:', err);
+        isFavorite.value = false;
+      });
+    } else {
+      api.delete(`/shows/favorites/${show.value.id}`).catch(err => {
+        console.error('Error removing from favorites:', err);
+        isFavorite.value = true;
+      });
+    }
+  }
 }
 
 onMounted(async () => {
@@ -97,6 +114,12 @@ onMounted(async () => {
       let res = await api.get(`/shows/${showType.value}/${showId}`);
       if (res.data) {
         show.value = res.data;
+      }
+      if (isLoggedIn.value) {
+        let favoriteRes = await api.get(`/shows/favorites/${showId}`);
+        if (favoriteRes.data) {
+          isFavorite.value = favoriteRes.data?.isFavorite || false;
+        }
       }
     }
     isLoading.value = false;
@@ -119,8 +142,7 @@ onMounted(async () => {
 
 .trailer-iframe {
   width: 100%;
-  max-width: 600px;
-  height: 340px;
+  height: 400px;
   border-radius: 12px;
   background: #222;
 }

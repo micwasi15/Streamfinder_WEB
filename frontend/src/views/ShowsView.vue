@@ -1,7 +1,13 @@
 <template>
-  <div class="container py-4">
+  <div v-if="props.favoritesMode && !isLoggedIn" class="d-flex justify-content-center align-items-center"
+    style="min-height: 60vh;">
+    <div class="alert alert-warning text-center text-black">
+      Aby przeglądać ulubione, musisz się zalogować.
+    </div>
+  </div>
+  <div v-else class="container py-4">
 
-    <!-- 🔍 Pasek wyszukiwania i lata -->
+    <!-- Pasek wyszukiwania i lata -->
     <form class="row g-3 align-items-end mb-4" @submit.prevent="fetchShows">
       <div class="col-sm-6 col-md-4">
         <label class="form-label">Szukaj po nazwie</label>
@@ -17,32 +23,17 @@
       </div>
     </form>
 
-    <!-- 🔢 Paginacja + opcje -->
+    <!-- Paginacja + opcje -->
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
-      <!-- 📄 Strona -->
+      <!-- Strona -->
       <div class="d-flex align-items-center gap-2">
-        <button
-          class="btn btn-outline-secondary"
-          :disabled="page <= 1"
-          @click="changePage(page - 1)"
-        >
+        <button class="btn btn-outline-secondary" :disabled="page <= 1" @click="changePage(page - 1)">
           &lt;
         </button>
-        <input
-          type="number"
-          class="form-control d-inline-block w-auto"
-          style="width: 70px;"
-          v-model.number="pageInput"
-          @keyup.enter="goToPage"
-          min="1"
-          :max="totalPages"
-        />
+        <input type="number" class="form-control d-inline-block w-auto" style="width: 70px;" v-model.number="pageInput"
+          @keyup.enter="goToPage" min="1" :max="totalPages" />
         <span>/ {{ totalPages }}</span>
-        <button
-          class="btn btn-outline-secondary"
-          :disabled="page >= totalPages"
-          @click="changePage(page + 1)"
-        >
+        <button class="btn btn-outline-secondary" :disabled="page >= totalPages" @click="changePage(page + 1)">
           &gt;
         </button>
       </div>
@@ -72,14 +63,22 @@
           <ShowListElem :show="show" :tile="true" />
         </div>
       </div>
+      <div v-if="!isLoading && shows.length === 0" class="d-flex justify-content-center align-items-center py-5">
+        Brak wyników wyszukiwania.
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import api from '@/axios'
 import ShowListElem from '@/components/shows/ShowListElem.vue'
+import { useUserStore } from '@/composables/useUserStore'
+
+const props = defineProps({
+  favoritesMode: { type: Boolean, default: false }
+})
 
 const searchQuery = ref('')
 const yearFrom = ref(2000)
@@ -92,6 +91,8 @@ const totalPages = ref(1)
 
 const viewMode = ref('details')
 const shows = ref([])
+const userStore = useUserStore()
+const isLoggedIn = computed(() => userStore.isAuthenticated)
 
 const fetchShows = async () => {
   const params = {
@@ -102,7 +103,12 @@ const fetchShows = async () => {
     size: pageSize.value
   }
 
-  const res = await api.get('/shows/search', { params })
+  let res
+  if (props.favoritesMode) {
+    res = await api.get('/shows/favorites', { params })
+  } else {
+    res = await api.get('/shows/search', { params })
+  }
   shows.value = res.data.content
   totalPages.value = res.data.total_pages
 }
@@ -125,20 +131,22 @@ const goToPage = () => {
   if (pageInput.value >= 1 && pageInput.value <= totalPages.value) {
     page.value = pageInput.value
   } else {
-    pageInput.value = page.value // reset to valid page
+    pageInput.value = page.value
   }
 }
 
-// Synchronizuj pageInput z page
 watch(page, (val) => {
   pageInput.value = val
   fetchShows()
 }, { immediate: true })
 
-// Watch all search/filter params
-watch([searchQuery, yearFrom, yearTo, pageSize], () => {
+watch([searchQuery, yearFrom, yearTo, pageSize, isLoggedIn], () => {
   page.value = 1
   pageInput.value = 1
+  fetchShows()
+})
+
+watch(() => props.favoritesMode, () => {
   fetchShows()
 })
 </script>

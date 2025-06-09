@@ -15,7 +15,8 @@ const routes = [
     children: [
       { path: '', redirect: '/home' },
       { path: 'home', name: 'Home', component: HomeView },
-      { path: 'search', name: 'Search', component: ShowsView },
+      { path: 'search', name: 'Search', component: ShowsView, props: {favoritesMode: false} },
+      { path: 'favorites', name: 'Favorites', component: ShowsView, props: {favoritesMode: true} },
       { path: 'shows/:id', name: 'ShowDetails', component: ShowDetails, props: true },
     ],
   },

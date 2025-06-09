@@ -4,8 +4,11 @@ import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import pl.edu.streamfinder.streamignOption.StreamingOptionsService;
+import pl.edu.streamfinder.user.User;
+import pl.edu.streamfinder.user.UserService;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -17,21 +20,43 @@ public class ShowService {
     private final ShowRepository showRepository;
     private final MongoTemplate mongoTemplate;
     private final StreamingOptionsService streamingOptionsService;
+    private final UserService userService;
 
-    public ShowService(ShowRepository showRepository, MongoTemplate mongoTemplate, StreamingOptionsService streamingOptionsService) {
+    public ShowService(ShowRepository showRepository, MongoTemplate mongoTemplate, StreamingOptionsService streamingOptionsService, UserService userService) {
         this.showRepository = showRepository;
         this.mongoTemplate = mongoTemplate;
         this.streamingOptionsService = streamingOptionsService;
-    }
-
-    public List<?> debugTypes() {
-        return showRepository.findAll().stream()
-                .map(Object::getClass)
-                .toList();
+        this.userService = userService;
     }
 
     public List<Show> getAllShows() {
         return showRepository.findAll();
+    }
+
+    public boolean isShowFavorite(String id, String email) {
+        User user = userService.findByEmail(email);
+        if (user == null) {
+            return false;
+        }
+        return user.getFavoriteShowIds().contains(id);
+    }
+
+    public boolean addShowToFavorites(String id, String email) {
+        return userService.addShowToFavorites(id, email);
+    }
+
+    public boolean removeShowFromFavorites(String id, String email) {
+        return userService.removeShowFromFavorites(id, email);
+    }
+
+    public Page<Show> searchUserFavoriteShows(ShowSearchCriteria criteria, String email) {
+        List<String> favoriteShowIds = userService.findByEmail(email).getFavoriteShowIds();
+
+        if (favoriteShowIds.isEmpty()) {
+            return new PageImpl<>(new ArrayList<>(), PageRequest.of(criteria.getPage(), criteria.getSize()), 0);
+        }
+
+        return searchShows(criteria, favoriteShowIds);
     }
 
     public Page<Show> searchShows(ShowSearchCriteria criteria) {

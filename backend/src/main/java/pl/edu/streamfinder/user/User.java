@@ -16,5 +16,5 @@ public class User {
     private String id;
     private String passwordHash;
     private String email;
-    private List<Show> favoriteShows;
+    private List<String> favoriteShowIds = new ArrayList<>();
 }
