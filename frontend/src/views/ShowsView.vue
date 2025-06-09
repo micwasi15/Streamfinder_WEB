@@ -36,13 +36,13 @@
         <input v-model.number="yearTo" type="number" class="form-control" />
       </div>
       <div class="col-sm-3 col-md-2">
-        <label class="form-label">Min. rating: <strong>{{ minRating }}</strong></label>
+        <label class="form-label">Min rating: <strong>{{ minRating }}</strong></label>
         <input
           v-model.number="minRating"
           type="range"
           min="0"
-          max="10"
-          step="0.1"
+          max="100"
+          step="1"
           class="form-range"
         />
       </div>
