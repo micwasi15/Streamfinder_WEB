@@ -4,7 +4,6 @@ import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import pl.edu.streamfinder.streamignOption.StreamingOptionsService;
 import pl.edu.streamfinder.user.User;
@@ -14,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 @Service
 public class ShowService {
@@ -79,7 +79,11 @@ public class ShowService {
         }
 
         if (criteria.getActors() != null && !criteria.getActors().isEmpty()) {
-            filters.add(Criteria.where("actors").in(criteria.getActors()));
+            List<Criteria> actorRegexCriterias = new ArrayList<>();
+            for (String actor : criteria.getActors()) {
+                actorRegexCriterias.add(Criteria.where("cast").regex(".*" + Pattern.quote(actor) + ".*", "i"));
+            }
+            filters.add(new Criteria().orOperator(actorRegexCriterias.toArray(new Criteria[0])));
         }
 
         if (criteria.getDirectors() != null && !criteria.getDirectors().isEmpty()) {
@@ -94,11 +98,35 @@ public class ShowService {
             filters.add(Criteria.where("streamingPlatforms").in(criteria.getPlatforms()));
         }
 
+        if (criteria.getMinRating() != null) {
+            filters.add(Criteria.where("rating").gte(criteria.getMinRating()));
+        }
+
+        List<Criteria> filmCriteriaList = new ArrayList<>();
+        List<Criteria> seriesCriteriaList = new ArrayList<>();
+
+        filmCriteriaList.add(Criteria.where("_class").is("film"));
+        seriesCriteriaList.add(Criteria.where("_class").is("series"));
+
+        if (criteria.getMinYear() != null) {
+            filmCriteriaList.add(Criteria.where("releaseYear").gte(criteria.getMinYear()));
+            seriesCriteriaList.add(Criteria.where("firstAirYear").gte(criteria.getMinYear()));
+        }
+
+        if (criteria.getMaxYear() != null) {
+            filmCriteriaList.add(Criteria.where("releaseYear").lte(criteria.getMaxYear()));
+            seriesCriteriaList.add(Criteria.where("lastAirYear").lte(criteria.getMaxYear()));
+        }
+
+        Criteria filmCriteria = new Criteria().andOperator(filmCriteriaList.toArray(new Criteria[0]));
+        Criteria seriesCriteria = new Criteria().andOperator(seriesCriteriaList.toArray(new Criteria[0]));
+
+        filters.add(new Criteria().orOperator(filmCriteria, seriesCriteria));
+
+
         Query query = new Query();
 
-        if (!filters.isEmpty()) {
-            query.addCriteria(new Criteria().andOperator(filters.toArray(new Criteria[0])));
-        }
+        query.addCriteria(new Criteria().andOperator(filters.toArray(new Criteria[0])));
 
         long total = mongoTemplate.count(query, Show.class);
         Pageable pageable = PageRequest.of(criteria.getPage(), criteria.getSize(), Sort.by(criteria.getSortBy()));
@@ -155,9 +183,9 @@ public class ShowService {
         List<PlatformStats> platformStats = getPlatformStats(null, res);
         res.sort((p1, p2) -> {
             int count1 = platformStats.stream().filter(ps -> ps.getPlatformName().equals(p1)).mapToInt(PlatformStats::getTotalFilms).sum() +
-                         platformStats.stream().filter(ps -> ps.getPlatformName().equals(p1)).mapToInt(PlatformStats::getTotalSeries).sum();
+                    platformStats.stream().filter(ps -> ps.getPlatformName().equals(p1)).mapToInt(PlatformStats::getTotalSeries).sum();
             int count2 = platformStats.stream().filter(ps -> ps.getPlatformName().equals(p2)).mapToInt(PlatformStats::getTotalFilms).sum() +
-                         platformStats.stream().filter(ps -> ps.getPlatformName().equals(p2)).mapToInt(PlatformStats::getTotalSeries).sum();
+                    platformStats.stream().filter(ps -> ps.getPlatformName().equals(p2)).mapToInt(PlatformStats::getTotalSeries).sum();
             return Integer.compare(count2, count1);
         });
 

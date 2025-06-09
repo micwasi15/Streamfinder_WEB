@@ -14,9 +14,9 @@ public class ShowSearchCriteria {
     private List<String> genres;
     private List<String> countries;
     private List<String> platforms;
-    private int minRating;
-    private int minYear;
-    private int maxYear;
+    private Integer minRating;
+    private Integer minYear;
+    private Integer maxYear;
     private int page = 0;
     private int size = 10;
     private String sortBy = "title";

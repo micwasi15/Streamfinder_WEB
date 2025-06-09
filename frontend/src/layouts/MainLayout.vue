@@ -88,6 +88,7 @@ watch(() => userStore.user, (newUser) => {
 <style scoped>
 main {
   background: #000000;
+  width: 65%;
 }
 
 .custom-dropdown {
