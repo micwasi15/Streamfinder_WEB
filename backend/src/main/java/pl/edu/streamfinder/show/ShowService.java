@@ -100,10 +100,10 @@ public class ShowService {
             query.addCriteria(new Criteria().andOperator(filters.toArray(new Criteria[0])));
         }
 
+        long total = mongoTemplate.count(query, Show.class);
         Pageable pageable = PageRequest.of(criteria.getPage(), criteria.getSize(), Sort.by(criteria.getSortBy()));
         query.with(pageable);
 
-        long total = mongoTemplate.count(query, Show.class);
         List<Show> content = mongoTemplate.find(query, Show.class);
 
         return new PageImpl<>(content, pageable, total);

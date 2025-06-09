@@ -30,15 +30,22 @@
         <button class="btn btn-outline-secondary" :disabled="page <= 1" @click="changePage(page - 1)">
           &lt;
         </button>
-        <input type="number" class="form-control d-inline-block w-auto" style="width: 70px;" v-model.number="pageInput"
-          @keyup.enter="goToPage" min="1" :max="totalPages" />
+        <input
+          type="number"
+          class="form-control d-inline-block w-auto align-self-center"
+          style="width: 70px; min-width: 70px; max-width: 70px;"
+          v-model.number="pageInput"
+          @input="goToPage"
+          min="1"
+          :max="totalPages"
+        />
         <span>/ {{ totalPages }}</span>
         <button class="btn btn-outline-secondary" :disabled="page >= totalPages" @click="changePage(page + 1)">
           &gt;
         </button>
       </div>
 
-      <!-- 📏 Ilość + Tryb -->
+      <!-- Ilość + Tryb -->
       <div class="d-flex align-items-center gap-2 flex-wrap">
         <div class="btn-group" role="group">
           <button v-for="opt in [15, 30, 45]" :key="opt" @click="setPageSize(opt)"
@@ -110,7 +117,7 @@ const fetchShows = async () => {
     res = await api.get('/shows/search', { params })
   }
   shows.value = res.data.content
-  totalPages.value = res.data.total_pages
+  totalPages.value = res.data.totalPages
 }
 
 const setPageSize = (size) => {
@@ -154,5 +161,15 @@ watch(() => props.favoritesMode, () => {
 <style scoped>
 div {
   color: white;
+}
+
+/* Ukryj strzałki w input[type=number] */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance: textfield;
 }
 </style>
