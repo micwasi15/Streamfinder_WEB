@@ -5,7 +5,7 @@
         <tr>
           <th class="sticky-col"></th>
           <th v-for="service in services" :key="service.name">
-            <img :src="service.logoURL" :alt="service.name" class="service-logo" />
+            <img :src="getLogoPath(service.name)" :alt="service.name" class="service-logo" />
           </th>
         </tr>
       </thead>
@@ -34,6 +34,12 @@
 <script setup>
 import { getAvailabilityByCountry, getStreamingOptionsServices, getStreamingOptionsCountries, getVideoLink } from '@/utils/streamingOptionsUtils'
 import { ref, watch, onMounted } from 'vue'
+import netflixLogo from '@/assets/logos/netflix.png'
+import hboLogo from '@/assets/logos/hbo.png'
+import disneyLogo from '@/assets/logos/disney.png'
+import primeLogo from '@/assets/logos/amazon.png'
+import appleLogo from '@/assets/logos/apple.png'
+import placeholderLogo from '@/assets/img/placeholder.jpg'
 
 const props = defineProps({
   streamingOptions: Object,
@@ -42,6 +48,14 @@ const props = defineProps({
 const services = ref([])
 const countries = ref([])
 const availability = ref({})
+
+const logoMap = {
+  netflix: netflixLogo,
+  max: hboLogo,
+  disney: disneyLogo,
+  'prime video': primeLogo,
+  apple: appleLogo,
+}
 
 async function updateData() {
   if (!props.streamingOptions) {
@@ -68,6 +82,12 @@ function play(countryCode, serviceName) {
     window.open(url, '_blank')
   else
     alert('Brak dostępnego linku do odtworzenia.')
+}
+
+function getLogoPath(serviceName) {
+  if (!serviceName) return placeholderLogo
+  const key = serviceName.trim().toLowerCase()
+  return logoMap[key] || null
 }
 </script>
 
