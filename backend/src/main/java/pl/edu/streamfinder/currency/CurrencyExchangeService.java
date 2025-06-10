@@ -1,5 +1,6 @@
 package pl.edu.streamfinder.currency;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -12,6 +13,9 @@ import java.util.Set;
 public class CurrencyExchangeService {
     private final CurrencyExchangeRepository currencyExchangeRepository;
     private final RestTemplate restTemplate;
+
+    @Value("${currency.exchange.api-key}")
+    private String apiKey;
 
     public CurrencyExchangeService(CurrencyExchangeRepository currencyExchangeRepository, RestTemplate restTemplate) {
         this.currencyExchangeRepository = currencyExchangeRepository;
@@ -60,7 +64,7 @@ public class CurrencyExchangeService {
     }
 
     public Map<String, Double> getRatesForCurrency() throws RuntimeException {
-        String url = "https://api.currencyfreaks.com/v2.0/rates/latest?apikey=4ea6f34c259f4bd6b930bd850601919a";
+        String url = "https://api.currencyfreaks.com/v2.0/rates/latest?apikey=" + apiKey;
 
         ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
         if (!response.getStatusCode().is2xxSuccessful()) {

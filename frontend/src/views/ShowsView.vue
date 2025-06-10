@@ -26,59 +26,65 @@
       </div>
     </form>
 
-    <form v-if="showAdvanced" class="row g-3 align-items-end mb-4" @submit.prevent="fetchShows">
-      <div class="col-sm-3 col-md-2">
-        <label class="form-label">Rok od</label>
-        <input v-model.number="yearFrom" type="number" class="form-control" />
-      </div>
-      <div class="col-sm-3 col-md-2">
-        <label class="form-label">Rok do</label>
-        <input v-model.number="yearTo" type="number" class="form-control" />
-      </div>
-      <div class="col-sm-3 col-md-2">
-        <label class="form-label">Min rating: <strong>{{ minRating }}</strong></label>
-        <input
-          v-model.number="minRating"
-          type="range"
-          min="0"
-          max="100"
-          step="1"
-          class="form-range"
-        />
-      </div>
-      <div class="col-12 mt-2">
-        <label class="form-label">Aktorzy</label>
-        <div
-          v-for="(actor, idx) in actors"
-          :key="idx"
-          class="mb-2 row"
-          style="max-width:400px;"
-        >
-          <div class="col-10 pe-0">
-            <input
-              v-model="actors[idx]"
-              type="text"
-              class="form-control"
-              :placeholder="`Aktor ${idx + 1}`"
-              @input="onActorInput(idx)"
-              :maxlength="50"
-            />
-          </div>
-          <div class="col-2 d-flex align-items-center">
-            <button
-              type="button"
-              class="btn btn-outline-danger btn-sm w-100"
-              @click="removeActor(idx)"
-              v-if="actors[idx]"
-              tabindex="-1"
-              aria-label="Wyczyść pole"
-            >
-              &times;
-            </button>
+    <Transition name="slide-fade">
+      <form
+        v-if="showAdvanced"
+        class="row g-3 align-items-end mb-4 advanced-form"
+        @submit.prevent="fetchShows"
+      >
+        <div class="col-sm-3 col-md-2">
+          <label class="form-label">Rok od</label>
+          <input v-model.number="yearFrom" type="number" class="form-control" />
+        </div>
+        <div class="col-sm-3 col-md-2">
+          <label class="form-label">Rok do</label>
+          <input v-model.number="yearTo" type="number" class="form-control" />
+        </div>
+        <div class="col-sm-3 col-md-2">
+          <label class="form-label">Min rating: <strong>{{ minRating }}</strong></label>
+          <input
+            v-model.number="minRating"
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            class="form-range"
+          />
+        </div>
+        <div class="col-12 mt-2">
+          <label class="form-label">Aktorzy</label>
+          <div
+            v-for="(actor, idx) in actors"
+            :key="idx"
+            class="mb-2 row"
+            style="max-width:400px;"
+          >
+            <div class="col-10 pe-0">
+              <input
+                v-model="actors[idx]"
+                type="text"
+                class="form-control"
+                :placeholder="`Aktor ${idx + 1}`"
+                @input="onActorInput(idx)"
+                :maxlength="50"
+              />
+            </div>
+            <div class="col-2 d-flex align-items-center">
+              <button
+                type="button"
+                class="btn btn-outline-danger btn-sm w-100"
+                @click="removeActor(idx)"
+                v-if="actors[idx]"
+                tabindex="-1"
+                aria-label="Wyczyść pole"
+              >
+                &times;
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </form>
+      </form>
+    </Transition>
 
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
       <div class="d-flex align-items-center gap-2">
@@ -305,5 +311,24 @@ div {
 }
 .btn:active {
   filter: none !important;
+}
+
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: max-height 0.7s cubic-bezier(.4,2,.6,1), opacity 0.3s;
+  overflow: hidden;
+}
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  max-height: 0;
+  opacity: 0;
+}
+.slide-fade-enter-to,
+.slide-fade-leave-from {
+  max-height: 500px;
+  opacity: 1;
+}
+.advanced-form {
+  will-change: max-height, opacity;
 }
 </style>

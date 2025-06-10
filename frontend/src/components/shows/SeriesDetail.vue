@@ -69,21 +69,20 @@ function toggleEpisode(idx) {
 <style scoped>
 .slide-fade-enter-active,
 .slide-fade-leave-active {
-  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  transition: max-height 0.7s cubic-bezier(.4,2,.6,1), opacity 0.3s;
   overflow: hidden;
 }
 .slide-fade-enter-from,
 .slide-fade-leave-to {
   max-height: 0;
   opacity: 0;
-  padding-top: 0;
-  padding-bottom: 0;
 }
 .slide-fade-enter-to,
 .slide-fade-leave-from {
   max-height: 500px;
   opacity: 1;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+}
+.advanced-form {
+  will-change: max-height, opacity;
 }
 </style>

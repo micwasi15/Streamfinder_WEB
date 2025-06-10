@@ -23,7 +23,7 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
     private final UserService userService;
     private final String redirectUri;
 
-    public CustomOAuth2SuccessHandler(JwtService jwtService, UserService userService, @Value("${frontend.redirect-uri}") String redirectUri) {
+    public CustomOAuth2SuccessHandler(JwtService jwtService, UserService userService, @Value("${cors.allowed.origins}") String redirectUri) {
         this.jwtService = jwtService;
         this.userService = userService;
         this.redirectUri = redirectUri;
