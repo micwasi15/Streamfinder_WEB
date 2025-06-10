@@ -5,13 +5,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.streamfinder.config.JwtService;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class UserController {
@@ -25,12 +23,7 @@ public class UserController {
         this.jwtService = jwtService;
     }
 
-    @GetMapping("/users")
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userService.findAll());
-    }
-
-    @GetMapping("/me")
+    @GetMapping("/auth/me")
     public ResponseEntity<UserResponseDTO> getCurrentUser(java.security.Principal principal) {
         User user = userService.findByEmail(principal.getName());
         return ResponseEntity.ok(new UserResponseDTO(user));
@@ -38,7 +31,7 @@ public class UserController {
 
     @PostMapping("/auth/logout")
     public ResponseEntity<?> logout(HttpServletResponse response,
-                                    @CookieValue(name = "jwt", required = false) String jwtCookie) {
+                                    @CookieValue(name = "jwt", required = false) String ignoredJwtCookie) {
         ResponseCookie cookie = ResponseCookie.from("jwt", "")
                 .path("/")
                 .maxAge(0)
@@ -65,7 +58,11 @@ public class UserController {
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         user.setRoles(List.of("USER"));
 
-        userService.createUser(user);
+        if (!userService.createUser(user)) {
+            return ResponseEntity
+                    .badRequest()
+                    .body("Failed to create user");
+        }
         return ResponseEntity.ok("User registered successfully");
     }
 

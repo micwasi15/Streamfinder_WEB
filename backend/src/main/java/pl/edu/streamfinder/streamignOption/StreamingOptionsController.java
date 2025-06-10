@@ -13,7 +13,7 @@ public class StreamingOptionsController {
         this.streamingOptionsService = streamingOptionsService;
     }
 
-    @GetMapping("/streaming-options/{id}")
+    @GetMapping("/api/public/streaming-options/{id}")
     public ResponseEntity<StreamingOptions> getStreamingOptions(@PathVariable String id) {
         StreamingOptions streamingOptions = streamingOptionsService.getStreamingOptions(id);
         return ResponseEntity.ok(streamingOptions);

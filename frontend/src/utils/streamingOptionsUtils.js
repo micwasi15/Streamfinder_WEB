@@ -1,7 +1,7 @@
 import api from '@/axios'
 
 export function getAllCountries() {
-    let res = api.get('/countries')
+    let res = api.get('/api/public/countries')
     return res.then(response => {
         if (response.status === 200) {
             return response.data

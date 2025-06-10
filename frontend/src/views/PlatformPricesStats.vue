@@ -45,12 +45,12 @@ const currencyExchangeRates = ref({})
 
 onMounted(async () => {
   // Pobierz listę platform
-  const res = await api.get('/shows/platforms')
+  const res = await api.get('/api/public/shows/platforms')
   if (res.data) {
     platforms.value = res.data
     selectedPlatform.value = platforms.value.length > 0 ? platforms.value[0].id : ''
   }
-  const ratesRes = await api.get('/public/api/currency/latest')
+  const ratesRes = await api.get('/api/public/currency/latest')
   if (ratesRes.data) {
     currencyExchangeRates.value = ratesRes.data.currencyExchanges || []
   }

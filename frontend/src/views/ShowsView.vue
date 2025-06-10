@@ -197,7 +197,7 @@ function removeActor(idx) {
 
 const fetchGenres = async () => {
   try {
-    const res = await api.get('/shows/genres')
+    const res = await api.get('/api/public/shows/genres')
     genres.value = res.data
   } catch (error) {
     console.error('Błąd podczas pobierania gatunków:', error)
@@ -230,7 +230,7 @@ const fetchShows = async () => {
   if (props.favoritesMode) {
     res = await api.get('/shows/favorites', { params })
   } else {
-    res = await api.get('/shows/search', { params })
+    res = await api.get('/api/public/shows/search', { params })
   }
   shows.value = res.data.content
   totalPages.value = res.data.totalPages

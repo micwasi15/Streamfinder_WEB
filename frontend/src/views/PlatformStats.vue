@@ -1,16 +1,13 @@
 <template>
   <div class="row py-4">
-    <!-- Panel opcji -->
     <div class="col-12 col-md-4 mb-4 mb-md-0">
       <div class="card p-3">
         <h5 class="mb-3">Opcje</h5>
-        <!-- Gatunki -->
         <label class="form-label">Gatunek</label>
         <select v-model="selectedGenre" class="form-select mb-3">
           <option value="">Wszystkie</option>
           <option v-for="genre in genres" :key="genre" :value="genre">{{ genre }}</option>
         </select>
-        <!-- Serwisy streamingowe -->
         <label class="form-label">Serwisy streamingowe</label>
         <div class="scrollable-list">
           <div class="form-check d-flex align-items-center" v-for="service in streamingServices" :key="service">
@@ -22,10 +19,8 @@
         </div>
       </div>
     </div>
-    <!-- Panel wykresu -->
     <div class="col-12 col-md-8">
       <div class="card p-3 h-100 d-flex align-items-center">
-        <!-- Tu wstaw komponent wykresu, np. Chart.js lub vue-echarts -->
         <PlatformStatsChart :stats="stats" :selected-platforms="selectedServices" />
       </div>
     </div>
@@ -34,7 +29,6 @@
 
 <script setup>
 import { onMounted, ref, watch } from 'vue'
-// Przykładowe dane, zamień na pobierane z API
 const genres = ref([])
 const streamingServices = ref([])
 
@@ -43,8 +37,8 @@ const selectedServices = ref([])
 const stats = ref([])
 
 onMounted(() => {
-  const genresRes = api.get('/shows/genres')
-  const servicesRes = api.get('/shows/platforms')
+  const genresRes = api.get('/api/public/shows/genres')
+  const servicesRes = api.get('/api/public/shows/platforms')
   Promise.all([genresRes, servicesRes]).then(([genresData, servicesData]) => {
     genres.value = genresData.data
     streamingServices.value = servicesData.data
@@ -63,7 +57,7 @@ const loadStats = () => {
   } else {
     delete params.genre
   }
-  const res = api.get('/shows/platform-stats', { params })
+  const res = api.get('/api/public/shows/platform-stats', { params })
   res.then(response => {
     stats.value = response.data
   }).catch(error => {

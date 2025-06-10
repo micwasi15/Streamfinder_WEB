@@ -108,10 +108,10 @@ onMounted(async () => {
   let showId = $route.params.id;
 
   if (showId) {
-    let type = await api.get(`/shows/type/${showId}`);
+    let type = await api.get(`/api/public/shows/type/${showId}`);
     if (type.data) {
       showType.value = type.data.showType;
-      let res = await api.get(`/shows/${showType.value}/${showId}`);
+      let res = await api.get(`/api/public/shows/${showType.value}/${showId}`);
       if (res.data) {
         show.value = res.data;
       }

@@ -12,7 +12,7 @@ public class CurrencyExchangeController {
         this.currencyExchangeService = currencyExchangeService;
     }
 
-    @GetMapping("public/api/currency/latest")
+    @GetMapping("/api/public/currency/latest")
     public ResponseEntity<CurrencyExchangeData> getLatestCurrencyExchangeData() {
         CurrencyExchangeData latestData = currencyExchangeService.findLatestCurrencyExchangeData();
         if (latestData == null) {

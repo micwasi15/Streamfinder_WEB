@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 @RestController
 public class CountryController {
-    @GetMapping("/countries")
+    @GetMapping("/api/public/countries")
     public ResponseEntity<List<CountryDTO>> getCountries() {
         List<CountryDTO> countries = Arrays.stream(Country.values())
                 .map(c -> new CountryDTO(c.getCode(), c.getFullName()))

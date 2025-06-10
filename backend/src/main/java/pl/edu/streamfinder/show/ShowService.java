@@ -29,10 +29,6 @@ public class ShowService {
         this.userService = userService;
     }
 
-    public List<Show> getAllShows() {
-        return showRepository.findAll();
-    }
-
     public boolean isShowFavorite(String id, String email) {
         User user = userService.findByEmail(email);
         if (user == null) {

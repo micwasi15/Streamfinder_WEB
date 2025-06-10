@@ -16,7 +16,7 @@ public class ShowController {
         this.showService = showService;
     }
 
-    @GetMapping("/shows/search")
+    @GetMapping("/api/public/shows/search")
     public ResponseEntity<Page<Show>> getAllShows(ShowSearchCriteria criteria) {
         return ResponseEntity.ok(showService.searchShows(criteria));
     }
@@ -65,7 +65,7 @@ public class ShowController {
         }
     }
 
-    @GetMapping("/shows/type/{id}")
+    @GetMapping("/api/public/shows/type/{id}")
     public ResponseEntity<Map<String, String>> getShowType(@PathVariable String id) {
         String type = showService.getShowType(id);
         if (type == null) {
@@ -74,7 +74,7 @@ public class ShowController {
         return ResponseEntity.ok(Map.of("showType", type));
     }
 
-    @GetMapping("/shows/film/{id}")
+    @GetMapping("/api/public/shows/film/{id}")
     public ResponseEntity<Film> getFilmById(@PathVariable String id) {
         Film film = showService.getFilmById(id);
         if (film == null) {
@@ -83,7 +83,7 @@ public class ShowController {
         return ResponseEntity.ok(film);
     }
 
-    @GetMapping("/shows/series/{id}")
+    @GetMapping("/api/public/shows/series/{id}")
     public ResponseEntity<Series> getSeriesById(@PathVariable String id) {
         Series series = showService.getSeriesById(id);
         if (series == null) {
@@ -92,19 +92,19 @@ public class ShowController {
         return ResponseEntity.ok(series);
     }
 
-    @GetMapping("/shows/platforms")
+    @GetMapping("/api/public/shows/platforms")
     public ResponseEntity<List<String>> getAllStreamingPlatforms() {
         List<String> platforms = showService.getAllStreamingPlatforms();
         return ResponseEntity.ok(platforms);
     }
 
-    @GetMapping("/shows/genres")
+    @GetMapping("/api/public/shows/genres")
     public ResponseEntity<List<String>> getAllGenres() {
         List<String> genres = showService.getAllGenres();
         return ResponseEntity.ok(genres);
     }
 
-    @GetMapping("/shows/platform-stats")
+    @GetMapping("/api/public/shows/platform-stats")
     public ResponseEntity<List<PlatformStats>> getPlatformStats(@RequestParam(required = false) String genre, @RequestParam List<String> platforms) {
         List<PlatformStats> stats = showService.getPlatformStats(genre, platforms);
         return ResponseEntity.ok(stats);

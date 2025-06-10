@@ -63,14 +63,6 @@ const handleSubmit = async () => {
       isRegisterMode.value = false
       password.value = ''
       repeatPassword.value = ''
-      userStore.login({
-        email: email.value,
-        password: password.value
-      }).then(() => {
-        router.push('/')
-      }).catch(() => {
-        alert('Logowanie nieudane. Sprawdź dane.')
-      })
     } catch (error) {
       alert('Rejestracja nieudana: ' + (error.response?.data?.message || error.message))
     }

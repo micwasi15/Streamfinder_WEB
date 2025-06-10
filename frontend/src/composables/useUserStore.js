@@ -12,7 +12,7 @@ export const useUserStore = defineStore('user', {
   actions: {
     async fetchUser() {
       try {
-        const res = await api.get('/me', { withCredentials: true })
+        const res = await api.get('/auth/me', { withCredentials: true })
         this.user = res.data
       } catch (err) {
         this.user = null

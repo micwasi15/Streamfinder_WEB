@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.annotation.TypeAlias;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import pl.edu.streamfinder.streamignOption.StreamingOptions;
 
 @EqualsAndHashCode(callSuper = true)
