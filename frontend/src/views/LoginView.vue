@@ -59,10 +59,10 @@ const handleSubmit = async () => {
         email: email.value,
         password: password.value
       })
-      alert('Rejestracja udana! Możesz się teraz zalogować.')
       isRegisterMode.value = false
       password.value = ''
       repeatPassword.value = ''
+      router.push('/')
     } catch (error) {
       alert('Rejestracja nieudana: ' + (error.response?.data?.message || error.message))
     }

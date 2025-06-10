@@ -46,7 +46,7 @@ public class UserController {
     }
 
     @PostMapping("/auth/register")
-    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request, HttpServletResponse response) {
         if (userService.findByEmail(request.getEmail()) != null) {
             return ResponseEntity
                     .badRequest()
@@ -63,6 +63,18 @@ public class UserController {
                     .badRequest()
                     .body("Failed to create user");
         }
+
+        String jwt = jwtService.generateToken(request.getEmail());
+
+        ResponseCookie cookie = ResponseCookie.from("jwt", jwt)
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(7 * 24 * 60 * 60)
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
         return ResponseEntity.ok("User registered successfully");
     }
 
