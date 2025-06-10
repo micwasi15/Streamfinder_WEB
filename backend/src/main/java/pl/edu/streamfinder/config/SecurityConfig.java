@@ -30,7 +30,7 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .cors(Customizer.withDefaults())
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/api/public/**", "/auth/**", "/oauth2/**").permitAll()
+                    .requestMatchers("/api/public/**", "/auth/**", "/oauth2/**", "/v3/api-docs/**","/swagger-ui/**", "/swagger-ui.html").permitAll()
                     .anyRequest().authenticated())
             .oauth2Login(oauth2 -> oauth2.successHandler(successHandler))
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
