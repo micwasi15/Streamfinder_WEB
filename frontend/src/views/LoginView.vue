@@ -21,7 +21,10 @@
     <button class="btn btn-primary w-100 mt-2" @click="toggleMode">
       {{ isRegisterMode ? 'Masz już konto? Zaloguj się' : 'Nie masz konta? Zarejestruj się' }}
     </button>
-    <button class="btn btn-secondary w-100 mt-2" @click="googleLogin">Zaloguj przez Google</button>
+    <button class="btn btn-secondary w-100 mt-2 d-flex align-items-center justify-content-center" @click="googleLogin">
+      <i class="bi bi-google me-2"></i>
+      Zaloguj przez Google
+    </button>
   </div>
 </template>
 

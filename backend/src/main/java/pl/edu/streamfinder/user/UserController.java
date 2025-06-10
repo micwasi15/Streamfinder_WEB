@@ -27,6 +27,9 @@ public class UserController {
 
     @GetMapping("/auth/me")
     public ResponseEntity<UserResponseDTO> getCurrentUser(java.security.Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         User user = userService.findByEmail(principal.getName());
         return ResponseEntity.ok(new UserResponseDTO(user));
     }

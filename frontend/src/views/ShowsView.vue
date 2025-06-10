@@ -107,9 +107,13 @@
         </div>
         <div class="btn-group ms-3" role="group">
           <button @click="viewMode = 'details'"
-            :class="['btn', viewMode === 'details' ? 'btn-info' : 'btn-outline-info']">Szczegóły</button>
+            :class="['btn', viewMode === 'details' ? 'btn-info' : 'btn-outline-info']">
+            <i class="bi bi-list-task"></i>
+          </button>
           <button @click="viewMode = 'tiles'"
-            :class="['btn', viewMode === 'tiles' ? 'btn-info' : 'btn-outline-info']">Kafelki</button>
+            :class="['btn', viewMode === 'tiles' ? 'btn-info' : 'btn-outline-info']">
+            <i class="bi bi-grid-3x3-gap"></i>
+          </button>
         </div>
       </div>
     </div>
