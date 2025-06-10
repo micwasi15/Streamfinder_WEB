@@ -1,5 +1,5 @@
 <template>
-  <div style="width:100%;max-width:700px;">
+  <div class="platform-stats-chart">
     <Bar :data="chartData" :options="chartOptions" />
   </div>
 </template>
@@ -47,6 +47,7 @@ const chartData = computed(() => {
 
 const chartOptions = {
   responsive: true,
+  maintainAspectRatio: false, 
   plugins: {
     legend: { display: true },
     title: {
@@ -59,3 +60,19 @@ const chartOptions = {
   }
 }
 </script>
+
+<style scoped>
+.platform-stats-chart {
+  width: 100%;
+  height: 100%;
+  min-height: 350px;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+}
+.platform-stats-chart canvas {
+  width: 100% !important;
+  max-width: 100%;
+  display: block;
+}
+</style>

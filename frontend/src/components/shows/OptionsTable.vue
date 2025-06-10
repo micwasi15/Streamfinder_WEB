@@ -52,7 +52,7 @@ const availability = ref({})
 const logoMap = {
   netflix: netflixLogo,
   max: hboLogo,
-  disney: disneyLogo,
+  'disney+': disneyLogo,
   'prime video': primeLogo,
   apple: appleLogo,
 }

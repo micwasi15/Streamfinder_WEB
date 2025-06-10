@@ -1,7 +1,7 @@
 <template>
   <div v-if="props.favoritesMode && !isLoggedIn" class="d-flex justify-content-center align-items-center"
     style="min-height: 60vh;">
-    <div class="alert alert-warning text-center text-black">
+    <div class="alert alert-info text-center w-100 mb-0 text-bg-light">
       Aby przeglądać ulubione, musisz się zalogować.
     </div>
   </div>
@@ -27,11 +27,7 @@
     </form>
 
     <Transition name="slide-fade">
-      <form
-        v-if="showAdvanced"
-        class="row g-3 align-items-end mb-4 advanced-form"
-        @submit.prevent="fetchShows"
-      >
+      <form v-if="showAdvanced" class="row g-3 align-items-end mb-4 advanced-form" @submit.prevent="fetchShows">
         <div class="col-sm-3 col-md-2">
           <label class="form-label">Rok od</label>
           <input v-model.number="yearFrom" type="number" class="form-control" />
@@ -42,42 +38,18 @@
         </div>
         <div class="col-sm-3 col-md-2">
           <label class="form-label">Min rating: <strong>{{ minRating }}</strong></label>
-          <input
-            v-model.number="minRating"
-            type="range"
-            min="0"
-            max="100"
-            step="1"
-            class="form-range"
-          />
+          <input v-model.number="minRating" type="range" min="0" max="100" step="1" class="form-range" />
         </div>
         <div class="col-12 mt-2">
           <label class="form-label">Aktorzy</label>
-          <div
-            v-for="(actor, idx) in actors"
-            :key="idx"
-            class="mb-2 row"
-            style="max-width:400px;"
-          >
+          <div v-for="(actor, idx) in actors" :key="idx" class="mb-2 row" style="max-width:400px;">
             <div class="col-10 pe-0">
-              <input
-                v-model="actors[idx]"
-                type="text"
-                class="form-control"
-                :placeholder="`Aktor ${idx + 1}`"
-                @input="onActorInput(idx)"
-                :maxlength="50"
-              />
+              <input v-model="actors[idx]" type="text" class="form-control" :placeholder="`Aktor ${idx + 1}`"
+                @input="onActorInput(idx)" :maxlength="50" />
             </div>
             <div class="col-2 d-flex align-items-center">
-              <button
-                type="button"
-                class="btn btn-outline-danger btn-sm w-100"
-                @click="removeActor(idx)"
-                v-if="actors[idx]"
-                tabindex="-1"
-                aria-label="Wyczyść pole"
-              >
+              <button type="button" class="btn btn-outline-danger btn-sm w-100" @click="removeActor(idx)"
+                v-if="actors[idx]" tabindex="-1" aria-label="Wyczyść pole">
                 &times;
               </button>
             </div>
@@ -91,15 +63,9 @@
         <button class="btn btn-outline-secondary" :disabled="page <= 1" @click="changePage(page - 1)">
           &lt;
         </button>
-        <input
-          type="number"
-          class="form-control d-inline-block w-auto align-self-center no-spin"
-          style="width: 70px; min-width: 70px; max-width: 70px;"
-          v-model.number="pageInput"
-          @input="goToPage"
-          min="1"
-          :max="totalPages"
-        />
+        <input type="number" class="form-control d-inline-block w-auto align-self-center no-spin"
+          style="width: 70px; min-width: 70px; max-width: 70px;" v-model.number="pageInput" @input="goToPage" min="1"
+          :max="totalPages" />
         <span>/ {{ totalPages }}</span>
         <button class="btn btn-outline-secondary" :disabled="page >= totalPages" @click="changePage(page + 1)">
           &gt;
@@ -116,8 +82,7 @@
             :class="['btn', viewMode === 'details' ? 'btn-info' : 'btn-outline-info']">
             <i class="bi bi-list-task"></i>
           </button>
-          <button @click="viewMode = 'tiles'"
-            :class="['btn', viewMode === 'tiles' ? 'btn-info' : 'btn-outline-info']">
+          <button @click="viewMode = 'tiles'" :class="['btn', viewMode === 'tiles' ? 'btn-info' : 'btn-outline-info']">
             <i class="bi bi-grid-3x3-gap"></i>
           </button>
         </div>
@@ -218,9 +183,9 @@ const fetchShows = async () => {
   isLoading.value = true
   const params = {
     title: searchQuery.value,
-    maxYear: showAdvanced.value ? yearTo.value : undefined,
-    minYear: showAdvanced.value ? yearFrom.value : undefined,
-    minRating: showAdvanced.value ? minRating.value : undefined,
+    maxYear: yearTo.value,
+    minYear: yearFrom.value,
+    minRating: minRating.value,
     page: page.value - 1,
     size: pageSize.value
   }
@@ -229,11 +194,9 @@ const fetchShows = async () => {
     params.genres = selectedGenre.value
   }
 
-  if (showAdvanced.value) {
-    const filteredActors = actors.value.map(a => a.trim()).filter(a => a)
-    if (filteredActors.length) {
-      params.actors = filteredActors.join(',')
-    }
+  const filteredActors = actors.value.map(a => a.trim()).filter(a => a)
+  if (filteredActors.length) {
+    params.actors = filteredActors.join(',')
   }
 
   let res
@@ -298,36 +261,43 @@ div {
   -webkit-appearance: none;
   margin: 0;
 }
+
 .no-spin {
   -moz-appearance: textfield;
 }
 
-.btn:focus, .btn:active, .btn:focus-visible {
+.btn:focus,
+.btn:active,
+.btn:focus-visible {
   box-shadow: none !important;
   outline: none !important;
   background-color: inherit !important;
   color: inherit !important;
   border-color: inherit !important;
 }
+
 .btn:active {
   filter: none !important;
 }
 
 .slide-fade-enter-active,
 .slide-fade-leave-active {
-  transition: max-height 0.7s cubic-bezier(.4,2,.6,1), opacity 0.3s;
+  transition: max-height 0.7s cubic-bezier(.4, 2, .6, 1), opacity 0.3s;
   overflow: hidden;
 }
+
 .slide-fade-enter-from,
 .slide-fade-leave-to {
   max-height: 0;
   opacity: 0;
 }
+
 .slide-fade-enter-to,
 .slide-fade-leave-from {
   max-height: 500px;
   opacity: 1;
 }
+
 .advanced-form {
   will-change: max-height, opacity;
 }

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isLoading" class="d-flex justify-content-center align-items-center" style="min-height: 40vh;">
+  <div v-if="isLoading" class="d-flex justify-content-center align-items-center min-vh-100" style="min-height: 40vh;">
     <div class="alert alert-info text-center w-100 mb-0">
       Ładowanie danych...
     </div>

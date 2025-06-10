@@ -1,6 +1,8 @@
 <template>
-  <div class="details-container">
-    <!-- Trailer lub plakat -->
+  <div v-if="isLoading || message" class="text-center align-items-center d-flex flex-column justify-content-center vh-100">
+    <p class="text-center text-white" v-if="message">{{ message }}</p>
+  </div>
+  <div v-else class="details-container">
     <div class="media-box mb-3" v-if="!isLoading && show">
       <iframe
         v-if="trailerEmbedUrl"
@@ -17,8 +19,7 @@
       />
     </div>
 
-    <!-- Tytuł, lata, serce, ocena -->
-    <div v-if="!isLoading && show" class="d-flex align-items-center justify-content-between mb-3 flex-wrap text-white">
+    <div v-if="show" class="d-flex align-items-center justify-content-between mb-3 flex-wrap text-white">
       <div>
         <h2 class="mb-1">{{ show.title }}</h2>
         <div class="years" v-if="years">{{ years }}</div>
@@ -33,12 +34,10 @@
       </div>
     </div>
 
-    <p v-if="!isLoading && show.overview" class="mb-3 text-white">{{ show.overview }}</p>
+    <p v-if="show.overview" class="mb-3 text-white">{{ show.overview }}</p>
 
-    <!-- Szczegóły -->
-    <p class="text-center" v-if="message">{{ message }}</p>
-    <OptionsTable v-if="!isLoading && showType === 'film' && show" :streaming-options="show.streamingOptions"></OptionsTable>
-    <SeriesDetail v-if="!isLoading && showType === 'series' && show" :show="show"></SeriesDetail>
+    <OptionsTable v-if="showType === 'film' && show" :streaming-options="show.streamingOptions"></OptionsTable>
+    <SeriesDetail v-if="showType === 'series' && show" :show="show"></SeriesDetail>
   </div>
 </template>
 
@@ -107,23 +106,43 @@ function toggleFavorite() {
 onMounted(async () => {
   let showId = $route.params.id;
 
-  if (showId) {
-    let type = await api.get(`/api/public/shows/type/${showId}`);
-    if (type.data) {
-      showType.value = type.data.showType;
-      let res = await api.get(`/api/public/shows/${showType.value}/${showId}`);
-      if (res.data) {
-        show.value = res.data;
-      }
-      if (isLoggedIn.value) {
+  if (!showId) {
+    isLoading.value = false;
+    return;
+  }
+
+  let type;
+  try {
+    type = await api.get(`/api/public/shows/type/${showId}`);
+  } catch {
+    isLoading.value = false;
+    return;
+  }
+  if (!type.data) {
+    isLoading.value = false;
+    return;
+  }
+
+  showType.value = type.data.showType;
+  let res;
+  try {
+    res = await api.get(`/api/public/shows/${showType.value}/${showId}`);
+  } catch {
+    isLoading.value = false;
+    return;
+  }
+  if (res.data) {
+    show.value = res.data;
+    if (isLoggedIn.value) {
+      try {
         let favoriteRes = await api.get(`/shows/favorites/${showId}`);
         if (favoriteRes.data) {
           isFavorite.value = favoriteRes.data?.isFavorite || false;
         }
-      }
+      } catch {}
     }
-    isLoading.value = false;
   }
+  isLoading.value = false;
 });
 </script>
 

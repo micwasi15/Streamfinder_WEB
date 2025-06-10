@@ -18,7 +18,7 @@
             <strong>{{ episode.title }}</strong>
             <span class="text-muted ms-2"> {{ episode.number }}</span>
           </div>
-          <button class="btn btn-sm btn-outline-info" @click="toggleEpisode(idx)">
+          <button class="btn btn-sm btn-outline-dark" @click="toggleEpisode(idx)">
             {{ expandedEpisodes[idx] ? 'Ukryj opcje' : 'Pokaż opcje' }}
           </button>
         </div>

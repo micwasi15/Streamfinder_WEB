@@ -25,7 +25,6 @@
               <router-link class="nav-link" to="/favorites">Ulubione</router-link>
             </li>
 
-            <!-- Dropdown: Statystyki -->
             <li class="nav-item dropdown custom-dropdown">
               <a
                 class="nav-link dropdown-toggle"

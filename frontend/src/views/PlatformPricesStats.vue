@@ -1,22 +1,19 @@
 <template>
-  <div v-if="isLoading" class="d-flex justify-content-center align-items-center" style="min-height: 40vh;">
+  <div v-if="isLoading" class="d-flex justify-content-center align-items-center min-vh-100" style="min-height: 40vh;">
     <div class="alert alert-info text-center w-100 mb-0">
       Ładowanie danych...
     </div>
   </div>
   <div v-else class="row py-4">
-    <!-- Panel opcji -->
     <div class="col-12 col-md-4 mb-4 mb-md-0">
       <div class="card p-3">
         <h5 class="mb-3">Opcje</h5>
-        <!-- Platforma -->
         <label class="form-label">Platforma</label>
         <select v-model="selectedPlatform" class="form-select mb-3">
           <option v-for="platform in platforms" :key="platform" :value="platform">
             {{ platform }}
           </option>
         </select>
-        <!-- Plan -->
         <div v-if="plans.length > 1">
           <label class="form-label">Plan</label>
           <select v-model="selectedPlan" class="form-select mb-3">
@@ -27,7 +24,6 @@
         </div>
       </div>
     </div>
-    <!-- Panel tabeli -->
     <div class="col-12 col-md-8">
       <div class="card p-3">
         <PlatformPricesTable :data="tableData" />
@@ -46,12 +42,11 @@ const selectedPlatform = ref('')
 const plans = ref([])
 const selectedPlan = ref('')
 const tableData = ref([])
-const currencyExchangeRates = ref({})
+const currencyExchangeRates = ref([])
 const isLoading = ref(true)
 
 onMounted(async () => {
   isLoading.value = true
-  // Pobierz listę platform
   const res = await api.get('/api/public/shows/platforms')
   if (res.data) {
     platforms.value = res.data
@@ -61,7 +56,6 @@ onMounted(async () => {
   if (ratesRes.data) {
     currencyExchangeRates.value = ratesRes.data.currencyExchanges || []
   }
-  // Pobierz plany i dane tabeli dla domyślnej platformy
   if (selectedPlatform.value) {
     const res2 = await api.get(`/api/public/streaming-platforms/${selectedPlatform.value}`)
     plans.value = res2.data.plans || []
@@ -81,6 +75,7 @@ watch(selectedPlatform, async (platformId) => {
   const res = await api.get(`/api/public/streaming-platforms/${platformId}`)
   plans.value = res.data.plans || []
   selectedPlan.value = plans.value.length > 0 ? plans.value[0].name : ''
+  loadTableData()
 })
 
 watch(selectedPlan, () => {
