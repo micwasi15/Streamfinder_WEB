@@ -8,10 +8,11 @@
   >
     <img
       v-if="posterUrl"
-      :src="posterUrl"
+      :src="posterImgSrc"
       alt="plakat"
       class="poster-img"
       :class="tile ? 'poster-img-tile' : ''"
+      @error="onImgError"
     />
     <div v-if="!tile" class="show-content">
       <div class="row-flex">
@@ -40,8 +41,9 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { getShowHorizontalPosterUrl, getShowYears } from '@/utils/showUtils'
+import placeholderImg from '@/assets/img/placeholder.jpg'
 
 defineEmits(['show-clicked'])
 
@@ -67,6 +69,15 @@ const ratingColorClass = computed(() => {
   if (rating >= 50) return 'rating-orange'
   return 'rating-red'
 })
+
+const posterImgSrc = ref(posterUrl.value)
+watch(posterUrl, (val) => {
+  posterImgSrc.value = val
+})
+
+function onImgError(e) {
+  posterImgSrc.value = placeholderImg
+}
 </script>
 
 <style scoped>
