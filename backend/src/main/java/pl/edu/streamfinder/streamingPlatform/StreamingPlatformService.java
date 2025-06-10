@@ -1,6 +1,7 @@
 package pl.edu.streamfinder.streamingPlatform;
 
 import org.springframework.stereotype.Service;
+import pl.edu.streamfinder.exceptions.ObjectNotFoundException;
 
 @Service
 public class StreamingPlatformService {
@@ -11,6 +12,7 @@ public class StreamingPlatformService {
     }
 
     public StreamingPlatform getStreamingPlatformByName(String name) {
-        return streamingPlatformRepository.findByName(name);
+        return streamingPlatformRepository.findByName(name)
+                .orElseThrow(() -> new ObjectNotFoundException("Streaming platform not found: " + name));
     }
 }

@@ -30,7 +30,7 @@ public class CurrencyExchangeService {
     }
 
     public void updateCurrencyExchangeData() {
-        long currentTimestamp = System.currentTimeMillis() * 1000;
+        long currentTimestamp = System.currentTimeMillis() / 1000;
         Map<String, Double> usdExchangeRates;
         try {
             usdExchangeRates = getRatesForCurrency();
@@ -41,9 +41,11 @@ public class CurrencyExchangeService {
         CurrencyExchangeData currencyExchangeData = new CurrencyExchangeData();
         currencyExchangeData.setTimestamp(currentTimestamp);
         Set<String> currencies = usdExchangeRates.keySet();
+
         double defaultExchangeRate = 1.0;
         float euroExchangeRate = usdExchangeRates.getOrDefault("EUR", defaultExchangeRate).floatValue();
         float plnExchangeRate = usdExchangeRates.getOrDefault("PLN", defaultExchangeRate).floatValue();
+
         for (String currency : currencies) {
             CurrencyExchange currencyExchange = new CurrencyExchange();
             currencyExchange.setBaseCurrency(currency);
@@ -53,6 +55,7 @@ public class CurrencyExchangeService {
             currencyExchange.setPlnExchangeRate(usdExchangeRate / plnExchangeRate);
             currencyExchangeData.getCurrencyExchanges().add(currencyExchange);
         }
+
         currencyExchangeRepository.save(currencyExchangeData);
     }
 

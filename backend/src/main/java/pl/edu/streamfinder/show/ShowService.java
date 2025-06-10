@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import pl.edu.streamfinder.exceptions.ObjectNotFoundException;
 import pl.edu.streamfinder.streamignOption.StreamingOptionsService;
 import pl.edu.streamfinder.user.User;
 import pl.edu.streamfinder.user.UserService;
@@ -135,7 +136,8 @@ public class ShowService {
 
     public Film getFilmById(String id) {
         Film film = (Film) showRepository.findById(id)
-                .filter(show -> show instanceof Film).orElse(null);
+                .filter(show -> show instanceof Film)
+                .orElseThrow(() -> new ObjectNotFoundException("Film with id " + id + " not found"));
         if (film != null && film.getStreamingOptionsId() != null) {
             film.setStreamingOptions(
                     streamingOptionsService.getStreamingOptions(film.getStreamingOptionsId()));
@@ -145,7 +147,8 @@ public class ShowService {
 
     public Series getSeriesById(String id) {
         Series series = (Series) showRepository.findById(id)
-                .filter(show -> show instanceof Series).orElse(null);
+                .filter(show -> show instanceof Series)
+                .orElseThrow(() -> new ObjectNotFoundException("Series with id " + id + " not found"));
         if (series != null) {
             for (Season season : series.getSeasons()) {
                 for (Episode episode : season.getEpisodes()) {
@@ -160,10 +163,9 @@ public class ShowService {
     }
 
     public String getShowType(String id) {
-        Show show = showRepository.findById(id).orElse(null);
-        if (show == null) {
-            return null;
-        }
+        Show show = showRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Show with id " + id + " not found"));
+
         return show.getShowType();
     }
 

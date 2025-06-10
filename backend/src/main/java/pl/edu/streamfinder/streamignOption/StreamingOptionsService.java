@@ -1,8 +1,11 @@
 package pl.edu.streamfinder.streamignOption;
 
 import org.springframework.stereotype.Service;
+import pl.edu.streamfinder.exceptions.ObjectNotFoundException;
 import pl.edu.streamfinder.streamingPlatform.StreamingPlatform;
 import pl.edu.streamfinder.streamingPlatform.StreamingPlatformRepository;
+
+import java.util.Optional;
 
 @Service
 public class StreamingOptionsService {
@@ -16,14 +19,14 @@ public class StreamingOptionsService {
 
     public StreamingOptions getStreamingOptions(String id) {
         StreamingOptions streamingOptions = streamingOptionsRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Streaming options not found for ID: " + id));
+                .orElseThrow(() -> new ObjectNotFoundException("Streaming options not found for ID: " + id));
         for (StreamingOptionsByCountry options : streamingOptions.getStreamingOptions()) {
             for (Option option : options.getOptions()) {
                 String platformName = option.getService().getName();
-                StreamingPlatform streamingPlatform = streamingPlatformRepository.findByName(platformName);
-                if (streamingPlatform != null) {
-                    option.getService().setId(streamingPlatform.getId());
-                    option.getService().setLogoURL(streamingPlatform.getLogoURL());
+                Optional<StreamingPlatform> streamingPlatform = streamingPlatformRepository.findByName(platformName);
+                if (streamingPlatform.isPresent()) {
+                    option.getService().setId(streamingPlatform.get().getId());
+                    option.getService().setLogoURL(streamingPlatform.get().getLogoURL());
                 }
             }
         }

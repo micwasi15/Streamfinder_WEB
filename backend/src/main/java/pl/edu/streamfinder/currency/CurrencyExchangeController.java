@@ -16,7 +16,7 @@ public class CurrencyExchangeController {
     public ResponseEntity<CurrencyExchangeData> getLatestCurrencyExchangeData() {
         CurrencyExchangeData latestData = currencyExchangeService.findLatestCurrencyExchangeData();
         if (latestData == null) {
-            return ResponseEntity.notFound().build();
+            throw new IllegalStateException("No currency exchange data available");
         }
         return ResponseEntity.ok(latestData);
     }

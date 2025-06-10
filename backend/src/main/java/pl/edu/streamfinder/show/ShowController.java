@@ -68,27 +68,18 @@ public class ShowController {
     @GetMapping("/api/public/shows/type/{id}")
     public ResponseEntity<Map<String, String>> getShowType(@PathVariable String id) {
         String type = showService.getShowType(id);
-        if (type == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(Map.of("showType", type));
     }
 
     @GetMapping("/api/public/shows/film/{id}")
     public ResponseEntity<Film> getFilmById(@PathVariable String id) {
         Film film = showService.getFilmById(id);
-        if (film == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(film);
     }
 
     @GetMapping("/api/public/shows/series/{id}")
     public ResponseEntity<Series> getSeriesById(@PathVariable String id) {
         Series series = showService.getSeriesById(id);
-        if (series == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(series);
     }
 

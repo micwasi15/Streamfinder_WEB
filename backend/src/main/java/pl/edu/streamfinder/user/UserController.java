@@ -17,6 +17,8 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
+    private static final int WEEK_IN_SECONDS = 7 * 24 * 60 * 60;
+
     public UserController(UserService userService, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
@@ -48,9 +50,7 @@ public class UserController {
     @PostMapping("/auth/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request, HttpServletResponse response) {
         if (userService.findByEmail(request.getEmail()) != null) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("Email is already in use.");
+            throw new IllegalArgumentException("User with this email already exists");
         }
 
         User user = new User();
@@ -59,9 +59,7 @@ public class UserController {
         user.setRoles(List.of("USER"));
 
         if (!userService.createUser(user)) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("Failed to create user");
+            throw new IllegalStateException("User registration failed");
         }
 
         String jwt = jwtService.generateToken(request.getEmail());
@@ -70,7 +68,7 @@ public class UserController {
                 .httpOnly(true)
                 .secure(false)
                 .path("/")
-                .maxAge(7 * 24 * 60 * 60)
+                .maxAge(WEEK_IN_SECONDS)
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
@@ -81,11 +79,7 @@ public class UserController {
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletResponse response) {
         User user = userService.findByEmail(request.getEmail());
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
-        }
-
-        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+        if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
 
@@ -95,7 +89,7 @@ public class UserController {
                 .httpOnly(true)
                 .secure(false)
                 .path("/")
-                .maxAge(7 * 24 * 60 * 60)
+                .maxAge(WEEK_IN_SECONDS)
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());

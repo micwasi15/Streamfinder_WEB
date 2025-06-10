@@ -2,6 +2,8 @@ package pl.edu.streamfinder.streamingPlatform;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
+import java.util.Optional;
+
 public interface StreamingPlatformRepository extends MongoRepository<StreamingPlatform, String> {
-    StreamingPlatform findByName(String name);
+    Optional<StreamingPlatform> findByName(String name);
 }
