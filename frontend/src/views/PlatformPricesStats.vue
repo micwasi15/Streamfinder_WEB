@@ -1,5 +1,10 @@
 <template>
-  <div class="row py-4">
+  <div v-if="isLoading" class="d-flex justify-content-center align-items-center" style="min-height: 40vh;">
+    <div class="alert alert-info text-center w-100 mb-0">
+      Ładowanie danych...
+    </div>
+  </div>
+  <div v-else class="row py-4">
     <!-- Panel opcji -->
     <div class="col-12 col-md-4 mb-4 mb-md-0">
       <div class="card p-3">
@@ -32,7 +37,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import api from '@/axios'
 import PlatformPricesTable from '@/components/tables/PlatformPricesTable.vue'
 
@@ -42,18 +47,28 @@ const plans = ref([])
 const selectedPlan = ref('')
 const tableData = ref([])
 const currencyExchangeRates = ref({})
+const isLoading = ref(true)
 
 onMounted(async () => {
+  isLoading.value = true
   // Pobierz listę platform
   const res = await api.get('/api/public/shows/platforms')
   if (res.data) {
     platforms.value = res.data
-    selectedPlatform.value = platforms.value.length > 0 ? platforms.value[0].id : ''
+    selectedPlatform.value = platforms.value.length > 0 ? platforms.value[0] : ''
   }
   const ratesRes = await api.get('/api/public/currency/latest')
   if (ratesRes.data) {
     currencyExchangeRates.value = ratesRes.data.currencyExchanges || []
   }
+  // Pobierz plany i dane tabeli dla domyślnej platformy
+  if (selectedPlatform.value) {
+    const res2 = await api.get(`/api/public/streaming-platforms/${selectedPlatform.value}`)
+    plans.value = res2.data.plans || []
+    selectedPlan.value = plans.value.length > 0 ? plans.value[0].name : ''
+    loadTableData()
+  }
+  isLoading.value = false
 })
 
 watch(selectedPlatform, async (platformId) => {
@@ -63,12 +78,9 @@ watch(selectedPlatform, async (platformId) => {
     selectedPlan.value = ''
     return
   }
-  // Pobierz plany dla wybranej platformy
   const res = await api.get(`/api/public/streaming-platforms/${platformId}`)
   plans.value = res.data.plans || []
-  // Ustaw domyślnie pierwszy plan
   selectedPlan.value = plans.value.length > 0 ? plans.value[0].name : ''
-  loadTableData()
 })
 
 watch(selectedPlan, () => {
@@ -76,7 +88,6 @@ watch(selectedPlan, () => {
 })
 
 function getRates(currency) {
-  // Znajdź obiekt z kursami dla danej waluty
   return currencyExchangeRates.value.find(r => r.baseCurrency === currency) || {}
 }
 
@@ -86,7 +97,6 @@ function loadTableData() {
     return
   }
 
-  // Zbierz ceny tylko dla wybranego planu
   const plan = plans.value.find(p => p.name === selectedPlan.value)
   if (!plan) return
 
@@ -97,7 +107,6 @@ function loadTableData() {
     price: priceObj.price
   }))
 
-  // Wyznacz cenę w Polsce (dla wybranego planu)
   const polishPriceObj = prices.find(
     p => p.countryName === 'Poland'
   )
@@ -107,7 +116,6 @@ function loadTableData() {
     polishPricePLN = polishPriceObj.price * rate
   }
 
-  // Przygotuj dane do tabeli
   tableData.value = prices.map(p => {
     const rates = getRates(p.currency)
     const priceEUR = p.price / (rates.euroExchangeRate || 1)

@@ -1,5 +1,10 @@
 <template>
-  <div class="row py-4">
+  <div v-if="isLoading" class="d-flex justify-content-center align-items-center" style="min-height: 40vh;">
+    <div class="alert alert-info text-center w-100 mb-0">
+      Ładowanie danych...
+    </div>
+  </div>
+  <div v-else class="row py-4">
     <div class="col-12 col-md-4 mb-4 mb-md-0">
       <div class="card p-3">
         <h5 class="mb-3">Opcje</h5>
@@ -20,7 +25,7 @@
       </div>
     </div>
     <div class="col-12 col-md-8">
-      <div class="card p-3 h-100 d-flex align-items-center">
+      <div class="card p-3 d-flex align-items-center h-100">
         <PlatformStatsChart :stats="stats" :selected-platforms="selectedServices" />
       </div>
     </div>
@@ -29,14 +34,18 @@
 
 <script setup>
 import { onMounted, ref, watch } from 'vue'
+import PlatformStatsChart from '@/components/charts/PlatformStatsChart.vue'
+import api from '@/axios'
+
 const genres = ref([])
 const streamingServices = ref([])
-
 const selectedGenre = ref('')
 const selectedServices = ref([])
 const stats = ref([])
+const isLoading = ref(true)
 
 onMounted(() => {
+  isLoading.value = true
   const genresRes = api.get('/api/public/shows/genres')
   const servicesRes = api.get('/api/public/shows/platforms')
   Promise.all([genresRes, servicesRes]).then(([genresData, servicesData]) => {
@@ -45,6 +54,8 @@ onMounted(() => {
     loadStats()
   }).catch(error => {
     console.error('Błąd podczas pobierania danych:', error)
+  }).finally(() => {
+    isLoading.value = false
   })
 })
 
@@ -68,9 +79,6 @@ const loadStats = () => {
 watch(selectedGenre, () => {
   loadStats()
 }, { immediate: true })
-
-import PlatformStatsChart from '@/components/charts/PlatformStatsChart.vue'
-import api from '@/axios'
 </script>
 
 <style scoped>
